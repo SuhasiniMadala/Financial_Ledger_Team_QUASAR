@@ -8,7 +8,10 @@ This folder contains our research, technical investigation, design decisions, an
 ## Contents
 
 - `log.md` – Chronological record of team discussions and progress.
+- `inbox/` – New research notes awaiting review (see the brain-ingest skill).
 - `research/` – Individual research notes on technologies, algorithms, security, and system design.
+- `decisions/` – Records of important technical decisions and the reasons behind them.
+- `meetings/` – Detailed notes from team meetings and discussions.
 
 ## Team Members
 
