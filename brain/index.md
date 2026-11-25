@@ -23,9 +23,3 @@ This folder contains our research, technical investigation, design decisions, an
 
 To design and develop a Financial Ledger system that maintains financial transactions accurately and provides reliable tracking and management of financial records.
 
-- [[log]] – Chronological record of team discussions and progress.
-- inbox/ – Newly added research notes awaiting organization.
-- projects/ – Project-specific knowledge and documentation.
-- resources/ – Technical references and research material.
-- areas/ – Ongoing engineering practices.
-- archive/ – Inactive notes.
