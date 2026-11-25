@@ -18,3 +18,17 @@ Record:
 - Decisions made
 - Tasks assigned
 - Pending questions
+
+
+## 25 November 2026
+
+### Research Contributions – Geethika
+
+- Added research note on Double-Entry Bookkeeping.
+- Added research note on ACID Transactions.
+- Added research note on Idempotency in REST APIs.
+- Added research note on Financial Ledger Reconciliation.
+
+All four notes include summaries, sources, project relevance
+and links to related concepts.
+
