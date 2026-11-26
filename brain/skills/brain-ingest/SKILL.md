@@ -1,4 +1,3 @@
-
 ---
 name: brain-ingest
 description: Instructions for adding, summarising, linking, and maintaining research notes in the Financial Ledger project's knowledge base.
