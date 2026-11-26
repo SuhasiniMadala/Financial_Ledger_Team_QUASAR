@@ -10,4 +10,4 @@ Each decision note should include:
 - Decision taken
 - Alternatives considered
 - Reasons for the decision
-- Related notes using `[[links]]`
+- Related notes using wikilinks: `[[double-entry-accounting-principles]]`
