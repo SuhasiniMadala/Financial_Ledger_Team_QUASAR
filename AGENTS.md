@@ -48,7 +48,7 @@ Before implementing any feature or modifying any code or tests, agents and devel
    - `brain/archive/`: Inactive or historical records.
 2. Maintain `brain/index.md` as the vault entry point and `brain/log.md` as the chronological activity log.
 3. Use the `brain-ingest` skill to add research notes to `brain/inbox/`.
-4. Link notes with `[[wikilinks]]`, requirement IDs (e.g., `FR-1`, `TQ-6`), and pull requests (SB-1).
+4. Link notes with wikilinks (e.g. `[[double-entry-accounting-principles]]`), requirement IDs (e.g., `FR-1`, `TQ-6`), and pull requests (SB-1).
 5. Document significant technical decisions as Architecture Decision Records (ADRs) in `docs/adr/`, citing brain notes (SE-3, SB-3).
 6. Record significant AI sessions in the brain as AI session notes detailing goals and outcomes.
 
