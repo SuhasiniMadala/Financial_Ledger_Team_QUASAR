@@ -1,0 +1,141 @@
+name: Financial Ledger CI
+
+"on":
+  push:
+    branches: [ main, akshaya/my-contribution, "feature/**" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Code & Schema Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Validate Maven POM and Checkstyle/Formatting
+        run: mvn validate --batch-mode
+
+  build-and-test:
+    name: Build & Run Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build project and run tests (TQ-5 isolated test database)
+        run: mvn clean test --batch-mode
+
+  validate-skills:
+    name: Validate Agent Skills
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate SKILL.md frontmatter and naming
+        run: |
+          python3 -c "
+          import os, sys, glob, re
+
+          skill_files = glob.glob('skills/**/SKILL.md', recursive=True)
+          if not skill_files:
+              print('No skill files found!')
+              sys.exit(1)
+
+          errors = 0
+          for fpath in skill_files:
+              with open(fpath, 'r', encoding='utf-8') as f:
+                  content = f.read()
+              if not content.startswith('---'):
+                  print(f'Error in {fpath}: Missing leading YAML frontmatter separator ---')
+                  errors += 1
+              if not re.search(r'^name:\s+[\w\-]+', content, re.MULTILINE):
+                  print(f'Error in {fpath}: Missing valid name field in frontmatter')
+                  errors += 1
+              if not re.search(r'^description:\s+.+', content, re.MULTILINE):
+                  print(f'Error in {fpath}: Missing valid description field in frontmatter')
+                  errors += 1
+              print(f'Validated skill: {fpath}')
+
+          if errors > 0:
+              sys.exit(1)
+          print('All SKILL.md files are valid!')
+          "
+
+  validate-brain-notes:
+    name: Validate Second Brain Notes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify Brain Notes and Wikilinks
+        run: |
+          python3 -c "
+          import os, sys, glob, re
+
+          brain_files = glob.glob('brain/**/*.md', recursive=True)
+          print(f'Found {len(brain_files)} notes in brain vault.')
+          if len(brain_files) < 10:
+              print(f'Error: Expected at least 10 notes, found {len(brain_files)}')
+              sys.exit(1)
+
+          note_names = {os.path.splitext(os.path.basename(f))[0] for f in brain_files}
+
+          broken_links = 0
+          for fpath in brain_files:
+              with open(fpath, 'r', encoding='utf-8') as f:
+                  text = f.read()
+              wikilinks = re.findall(r'\[\[(.*?)\]\]', text)
+              for link in wikilinks:
+                  target = link.strip().lower().replace(' ', '-')
+                  if target not in note_names and link.strip() not in note_names:
+                      print(f'Warning: Broken wikilink [[{link}]] in {fpath}')
+          
+          print('Brain validation completed successfully!')
+          "
+
+  secret-scanning:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks Secret Scanner
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
