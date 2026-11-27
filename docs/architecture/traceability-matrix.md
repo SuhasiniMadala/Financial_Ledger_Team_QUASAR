@@ -8,7 +8,7 @@ Requirement -> GitHub Issue -> Pull Request -> Test -> Skill -> Brain note. Upda
 |---|---|---|---|
 | M1 PR | `stage3/member-1-account` | Akshaya A | #23 |
 | M2 PR | `stage3/member-2-payments-ledger` | Geethika M | #24 |
-| M3 PR | `stage3/member-3-transfers-history` | Suhasini M | #? |
+| M3 PR | `stage3/member-3-transfers-history` | Suhasini M | #25 |
 
 ## Functional requirements
 

@@ -44,7 +44,7 @@ Each job has a timeout, uses the Maven cache, and prints the failing file and li
 |---|---|---|---|---|---|---|---|---|
 | M1 PR | (add link) | | | | | | | |
 | M2 PR | (add link) | | | | | | | |
-| M3 PR | (add link) | | | | | | | |
+| M3 PR (#25) | [run 46034497855](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46034497855) | pass | pass | pass | pass | pass | pass | pass |
 | CI failure demo | (add link) | | | | | | | |
 
 These rows are filled in by the PR author after the run finishes. Do not fill them in before the run exists.
