@@ -1,3 +1,10 @@
+---
+title: "Monetary Representation and Integer Units"
+type: resource
+authors: [Akshaya A]
+created: 2026-11-26
+---
+
 # Monetary Representation and Integer Units
 
 ## Summary

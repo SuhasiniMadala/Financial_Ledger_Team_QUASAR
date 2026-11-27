@@ -1,3 +1,10 @@
+---
+title: "API Idempotency and Retry Semantics"
+type: resource
+authors: [Akshaya A]
+created: 2026-11-26
+---
+
 # API Idempotency and Retry Semantics
 
 ## Summary

@@ -71,6 +71,15 @@ All four notes include summaries, sources, project relevance, and links to relat
 
 ## 27 November 2026 - Stage 3 (Testing and CI)
 
+### brain-refine run - Geethika
+
+- Moved 17 Stage 1 research notes from `inbox/` to `research/` (already distilled into resources in Stage 2).
+- Added frontmatter (title, type, authors, created) to 24 notes; authors and dates taken from git history.
+- Fixed 18 broken title-style wikilinks (e.g. `ACID Transactions` -> `acid-transactions`).
+- Added the brain validator (`BrainVaultTest`) to CI; it reported all of the above before the fix.
+- New distilled note [[sqlite-write-lock-and-driver-behaviour]]; area note [[testing-strategy-and-quality-gates]]; review [[stage-2-review]]; AI session [[2026-11-27-geethika-ledger-and-reconciliation]].
+
 ### Notes - Akshaya
 
 - Area note [[api-error-contract-and-access-control]]; review [[stage-1-review]]; AI session [[2026-11-27-akshaya-accounts-and-platform]]; ADR-008.
+

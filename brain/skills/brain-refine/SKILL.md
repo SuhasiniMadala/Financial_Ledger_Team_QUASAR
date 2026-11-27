@@ -1,40 +1,44 @@
 ---
 name: brain-refine
-description: Instructions for refining, structuring, deduplicating, and moving notes from brain/inbox/ into distilled reference notes in brain/resources/, projects/, or areas/.
+description: Refine the Financial Ledger second brain - distil inbox notes into brain/resources/, merge duplicates, move processed raw notes to brain/research/ or brain/archive/, add missing frontmatter and fix broken wikilinks - then prove the vault is valid with the brain validator. Use at the end of each stage or when the inbox grows.
 ---
 
-# Brain Refine Skill
+# brain-refine
 
 ## Purpose
 
-The `brain-refine` skill guides team members and coding assistants in reviewing raw, newly ingested notes in `brain/inbox/`, deduplicating overlapping concepts, refining their technical insights, and distilling them into permanent PARA folders—primarily `brain/resources/` (for reference knowledge), `brain/areas/` (for long-term engineering standards), or `brain/projects/` (for stage-specific deliverables).
+Keep the vault organised by actionability (PARA) and keep every link working (SB-1). Distilled notes in `brain/resources/` are the ones ADRs and skills must cite (SB-3), so refining is what makes knowledge reusable.
 
-## When to Use
+## When to use
 
-- When multiple raw notes in `inbox/` cover similar themes (e.g., SQLite concurrency, transactions, and locking).
-- When transitioning from Stage 1 (Requirements & Ingestion) to Stage 2 (Design) or later stages.
-- Before authoring Architecture Decision Records (ADRs) or technical designs, to ensure they cite synthesized, distilled knowledge.
+- Several inbox notes cover the same topic (duplicates).
+- Before writing an ADR or a skill that needs a distilled note to cite.
+- At the end of every stage, before the stage review note (SB-2).
+- When CI's brain validation fails.
 
-## Procedure
+## Steps
 
-1. **Scan `brain/inbox/`**:
-   - Identify raw notes addressing a common domain (e.g. accounting mechanics, concurrency control, idempotency).
-2. **Synthesize & Distill**:
-   - Create or update a distilled note in `brain/resources/`.
-   - Distill key concepts, mathematical invariants, architectural constraints, and citations into a structured, authoritative reference.
-3. **Harmonize Links**:
-   - Ensure all wikilinks resolve cleanly to either distilled resource notes or active project files.
-   - Cross-link related resource notes.
-4. **Preserve Provenance**:
-   - Attribute original contributors and external authoritative sources.
-5. **Update Second Brain Index & Log**:
-   - Update `brain/index.md` with links to the new distilled resources.
-   - Record the refinement action in `brain/log.md` detailing which notes were synthesized and where they now reside.
+1. **Validate first.** Run `mvn test -Dtest=BrainVaultTest -Djacoco.skip=true` from the repository root and keep the list of problems.
+2. **Group the inbox.** Read `brain/inbox/` and group notes by topic.
+3. **Distil.** For each topic create or update one note in `brain/resources/` with `type: resource`, a summary, the rules/invariants, the project relevance (requirement IDs) and links back to its source notes. Credit the original authors in `authors`.
+4. **Move processed raw notes** out of the inbox with `git mv` (so history is kept): reviewed research goes to `brain/research/`; inactive material goes to `brain/archive/`. Links keep working because Obsidian resolves `[[name]]` by file name.
+5. **Fix schema problems.** Add the frontmatter from `brain-ingest` to any note without it. Take `authors` and `created` from `git log --follow --diff-filter=A -- <file>`, never guess.
+6. **Fix broken links.** Rewrite title-style links such as `[[ACID Transactions]]` to the file name `[[acid-transactions]]`; delete links to notes that do not exist.
+7. **Update** `brain/index.md` (list new distilled notes) and `brain/log.md` (what was merged or moved, by whom).
+8. **Validate again** (step 1 command) until it passes, then open a pull request.
 
-## Quality Checklist
+## Output
 
-- [ ] Clear title and concise summary.
-- [ ] Explicit mathematical rules, schemas, or architectural constraints.
-- [ ] Project-specific relevance tied to SRS requirements (e.g., `FR-1`, `TQ-6`).
-- [ ] Bidirectional wikilinks: `[[double-entry-accounting-principles]]`.
-- [ ] Log entry recorded in `brain/log.md`.
+Inbox contains only unprocessed notes, distilled notes are in `brain/resources/`, the validator passes, and the log records the refinement.
+
+## Example (Stage 3 run, 2026-11-27)
+
+17 Stage 1 research notes were moved from `inbox/` to `research/` (they had already been distilled into 7 resource notes in Stage 2), 24 notes received frontmatter with authors from git history, and 18 broken title-style links were rewritten. Result recorded in `brain/log.md`.
+
+## Safety
+
+Do not delete another member's note: move it. Do not change who authored a note. Never add secrets.
+
+## Grounding
+
+Distillation follows the structure used in [[financial-reconciliation-and-auditability]] and [[immutable-ledger-and-audit-trails]].

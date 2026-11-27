@@ -1,63 +1,51 @@
-# Financial Ledger – Second Brain Knowledge Base
+# Financial Ledger - Second Brain (Team QUASAR)
 
-## Team QUASAR
+Entry point of the Obsidian vault. Organised by actionability (PARA, SDLC section 1). Every note carries frontmatter (title, type, authors, created); CI checks the schema and every `[[wikilink]]` (`BrainVaultTest`).
 
-This folder contains the complete Second Brain knowledge base for the Financial Ledger project, structured according to the **PARA** (Projects, Areas, Resources, Archive) methodology as defined in our SDLC requirements.
+## How to use this vault
 
-## Knowledge Base Structure (PARA)
+- Add knowledge with the `brain-ingest` skill (`brain/skills/brain-ingest/SKILL.md`) -> lands in `inbox/`.
+- Organise and distil with `brain-refine` -> `resources/`, `research/`, `archive/`.
+- Ask questions or draft documents with `brain-query`, always citing notes.
+- Operational skills: `local-check` (SK-02) and `simulate-transfer` (SK-01).
+- Every change goes through a pull request (SB-5); `brain/log.md` records every run.
 
-The brain is organized by actionability:
+## Projects (active)
 
-- **`inbox/`** – Unsorted and newly ingested research notes awaiting review and distillation (managed via the `brain-ingest` skill).
-- **`projects/`** – Active projects, stage deliverables, and milestones (e.g., Stage 1 Requirements, Stage 2 Design).
-- **`areas/`** – Ongoing domains of responsibility, quality standards, and continuous maintenance (e.g., Architecture, CI/CD, Security).
-- **`resources/`** – Curated reference materials, distilled technical notes, and cheat sheets on financial systems, SQLite, and API design.
-- **`archive/`** – Inactive notes, completed project stages, and historical milestones preserved for auditability.
-- **`skills/`** – Executable agent workflows (`brain-ingest`, `brain-refine`, `brain-query`, `local-check`).
-- **`decisions/`** – Team meeting decisions and summaries.
-- **`meetings/`** – Records of team discussions.
-- **`research/`** – Reviewed technical research repository.
-- **`log.md`** – Chronological record of team activities, research ingestions, and project decisions.
+- AI-session notes (SDLC 6): [[2026-11-27-akshaya-accounts-and-platform]], [[2026-11-27-geethika-ledger-and-reconciliation]]
 
-## Distilled Reference Notes (`brain/resources/`)
+## Areas (ongoing standards)
 
-The following distilled notes synthesize core technical principles and serve as citations for Architecture Decision Records (ADRs):
+- [[api-error-contract-and-access-control]] - error format, 404-not-403, endpoint checklist
+- [[testing-strategy-and-quality-gates]] - what must pass before a merge; defect workflow (TQ-8)
 
-1. [[double-entry-accounting-principles]] – Double-entry accounting equation, asset vs. liability account mechanics, and conservation invariants (cited by ADR-001, ADR-003).
-2. [[sqlite-concurrency-and-acid-transactions]] – SQLite file locking, `BEGIN IMMEDIATE` serialization, and WAL mode (cited by ADR-001, ADR-002, ADR-003, ADR-007).
-3. [[api-idempotency-and-retry-semantics]] – Idempotency key pattern, SHA-256 request hashing, and retry replay mechanics (cited by ADR-005).
-4. [[immutable-ledger-and-audit-trails]] – Append-only ledger entries, DB triggers, and explicit reversal transactions (cited by ADR-003).
-5. [[financial-reconciliation-and-auditability]] – Three-point reconciliation checks (C1, C2, C3) and non-blocking snapshot audits (cited by ADR-003, ADR-007).
-6. [[monetary-representation-and-integer-units]] – Minor units in paise, integer arithmetic, and eliminating floating-point errors (cited by ADR-004).
-7. [[api-security-and-input-validation]] – JWT authentication, role-based authorization, ownership isolation, and parameter bounds (cited by ADR-006).
+## Resources (distilled - cite these from ADRs and skills, SB-3)
 
-## Ingested Research Notes (`brain/inbox/`)
+1. [[double-entry-accounting-principles]] - debits = credits, asset vs liability accounts (ADR-001, ADR-003, ADR-008)
+2. [[sqlite-concurrency-and-acid-transactions]] - SQLite locking, WAL, ACID (ADR-002, ADR-009, ADR-010)
+3. [[sqlite-write-lock-and-driver-behaviour]] - BEGIN IMMEDIATE in practice, busy timeout, sqlite-jdbc details (ADR-009) - Stage 3
+4. [[api-idempotency-and-retry-semantics]] - idempotency keys and replay (ADR-005)
+5. [[immutable-ledger-and-audit-trails]] - append-only entries, reversals (ADR-003)
+6. [[financial-reconciliation-and-auditability]] - checks C1-C3 (ADR-007)
+7. [[monetary-representation-and-integer-units]] - integer paise (ADR-004, ADR-008)
+8. [[api-security-and-input-validation]] - JWT, RBAC, validation (ADR-006)
 
-The inbox contains research notes contributed by team members:
-- `immutable-audit-trails.md`
-- `integer-minor-units-and-monetary-precision.md`
-- `rest-api-security-and-testing.md`
-- `double-entry-bookkeeping.md`
-- `idempotency-in-rest-apis.md`
-- `acid-transactions-and-sqlite.md`
-- `acid-transactions.md`
-- `database-concurrency-and-locking.md`
-- `database-concurrency.md`
-- `database-locking-and-race-conditions.md`
-- `sqlite-wal-mode-and-busy-timeout.md`
-- `sqlite-transactions-and-wal-mode.md`
-- `financial-ledger-reconciliation.md`
-- `jwt-authentication-and-role-based-authorization.md`
-- `test-driven-development-and-concurrency-testing.md`
-- `input-validation-and-boundary-checking.md`
-- `agent-skills-for-system-verification.md`
+## Research (reviewed raw notes, distilled above)
 
-## Team Members
+Stage 1 research by all three members, moved here from `inbox/` by `brain-refine` on 2026-11-27:
+[[acid-transactions]], [[acid-transactions-and-sqlite]], [[agent-skills-for-system-verification]], [[database-concurrency]], [[database-concurrency-and-locking]], [[database-locking-and-race-conditions]], [[double-entry-bookkeeping]], [[financial-ledger-reconciliation]], [[idempotency-in-rest-apis]], [[immutable-audit-trails]], [[input-validation-and-boundary-checking]], [[integer-minor-units-and-monetary-precision]], [[jwt-authentication-and-role-based-authorization]], [[rest-api-security-and-testing]], [[sqlite-transactions-and-wal-mode]], [[sqlite-wal-mode-and-busy-timeout]], [[test-driven-development-and-concurrency-testing]]
 
-- **Suhasini M** [BT2024043]
-- **Akshaya A** [BT2024215]
-- **Geethika M** [BT2024139]
+## Archive (inactive)
 
-## Project Goal
+- [[stage-1-review]] - Stage 1 review (written retrospectively)
+- [[stage-2-review]] - Stage 2 review (written retrospectively)
 
-To design and build a robust, mathematically sound digital wallet backend backed by a strict, tamper-evident double-entry ledger that guarantees ACID transactions, data integrity, idempotency, and clean API design.
+## Other folders
+
+- `inbox/` - new, unsorted notes (currently empty after refinement)
+- `decisions/`, `meetings/` - team decisions and meeting notes
+- `skills/` - the five Agent Skills
+
+## Team
+
+Suhasini M [BT2024043], Akshaya A [BT2024215], Geethika M [BT2024139]
