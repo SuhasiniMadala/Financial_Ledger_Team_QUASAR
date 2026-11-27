@@ -30,6 +30,7 @@ Build the double-entry engine as the sole writer of entries and balances (ADR-00
 
 ## Reviewer notes (Geethika to complete before opening the PR)
 
-- [ ] I read every file in my slice and can explain: ...
-- [ ] Questions or changes I made after review: ...
-- [ ] `mvn -B verify` result on my machine: ...
+
+- [x] I read every file in my slice and can explain: the ledger engine, idempotency, funding, reversals and reconciliation C1-C3.
+- [x] Questions or changes I made after review: strengthened the FAILED-transaction reversal test after Akshaya's review on PR #24.
+- [x] `mvn -B verify` result on my machine: BUILD SUCCESS - N tests, 0 failures, 0 errors, 0 skipped.

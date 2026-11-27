@@ -43,7 +43,9 @@ Each job has a timeout, uses the Maven cache, and prints the failing file and li
 | PR | Run link | Build | Lint | Tests | Secrets | Skills | Brain | local-check |
 |---|---|---|---|---|---|---|---|---|
 | M1 PR (#23) | [run 46012744050](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46012744050) | pass | pass | pass | pass | pass | pass | pass |
-| M2 PR | (add link) | | | | | | | |
+
+| M2 PR (#24) | [run 46027083290](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46027083290) | pass | pass | pass | pass | pass | pass | pass | |
+
 | M3 PR (#25) | [run 46034497855](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46034497855) | pass | pass | pass | pass | pass | pass | pass |
 | CI failure demo | (add link) | | | | | | | |
 
