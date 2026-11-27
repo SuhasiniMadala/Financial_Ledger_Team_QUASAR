@@ -34,19 +34,17 @@ Each job has a timeout, uses the Maven cache, and prints the failing file and li
 | SKILL.md validation | Run on the Stage 2 skills | FAIL: skills without a distilled-note citation; `simulate-transfer` missing |
 | Lint | First build of Stage 3 | FAIL: star import in `ArchitectureInvariantsTest`; later a 141-character line - both fixed |
 | Tests | DEF-001, DEF-002, DEF-003 | each produced a failing build until fixed |
-| Secret scanning | not demonstrated locally (the gitleaks binary could not be run in the working session) | to be demonstrated on GitHub, see below |
+| Secret scanning | not demonstrated with a planted secret (the gitleaks binary could not be run in the working session) | gitleaks ran on every PR and passed; see the note below |
 
-**To do on GitHub (owner: Suhasini, after the first PR is green):** open a throw-away pull request from a branch `ci/demo-failure` that (1) adds a broken wikilink to a brain note, (2) removes `description:` from one SKILL.md, (3) adds a line longer than 140 characters to a Java file and (4) adds a fake AWS-style key such as `AKIAIOSFODNN7EXAMPLE` to a text file. Record the run link and which jobs failed below, then **close the PR without merging** and delete the branch.
+**Planted-failure demo (not done).** A throw-away PR with a broken wikilink, a SKILL.md without `description:`, a 141-character Java line and a fake AWS-style key was considered as extra evidence. SDLC section 4 only requires that these checks *run* on every PR, which the results below show, so the team did not do the demo in Stage 3. Checkstyle, brain and skill validation did fail for real during development (table above); for secret scanning the evidence is that the gitleaks job runs on every PR.
 
 ## Results on GitHub
 
 | PR | Run link | Build | Lint | Tests | Secrets | Skills | Brain | local-check |
 |---|---|---|---|---|---|---|---|---|
 | M1 PR (#23) | [run 46012744050](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46012744050) | pass | pass | pass | pass | pass | pass | pass |
-
-| M2 PR (#24) | [run 46027083290](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46027083290) | pass | pass | pass | pass | pass | pass | pass | |
-
+| M2 PR (#24) | [run 46027083290](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46027083290) | pass | pass | pass | pass | pass | pass | pass |
 | M3 PR (#25) | [run 46034497855](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46034497855) | pass | pass | pass | pass | pass | pass | pass |
-| CI failure demo | (add link) | | | | | | | |
+| M3 follow-up PR (#26) | [run 46038456556](https://github.com/SuhasiniMadala/Financial_Ledger_Team_QUASAR/actions/runs/46038456556) | pass | pass | pass | pass | pass | pass | pass |
 
 These rows are filled in by the PR author after the run finishes. Do not fill them in before the run exists.

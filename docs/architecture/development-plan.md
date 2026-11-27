@@ -7,8 +7,8 @@ Following the course SDLC and SRS v1.2 (the version in the repository; earlier d
 ```mermaid
 graph LR
     S1["Stage 1: Requirements & Setup<br/>(COMPLETED)"] --> S2["Stage 2: Architecture & Design<br/>(COMPLETED)"]
-    S2 --> S3["Stage 3: Implementation, Testing & CI<br/>(CURRENT)"]
-    S3 --> S4["Stage 4: Verification & Final Demonstration"]
+    S2 --> S3["Stage 3: Implementation, Testing & CI<br/>(COMPLETED)"]
+    S3 --> S4["Stage 4: Verification & Final Demonstration<br/>(NEXT)"]
 ```
 
 ## 2. Stage Breakdown and Detailed Task Planning
@@ -22,7 +22,7 @@ graph LR
 
 ---
 
-### Stage 2: Architecture, Database Design & Second Brain Skills (Current Deliverable)
+### Stage 2: Architecture, Database Design & Second Brain Skills (Completed)
 - [x] **Task 2.1: Second Brain Workflow Skills**:
   - Implement `brain-refine` skill (`brain/skills/brain-refine/SKILL.md`).
   - Implement `brain-query` skill (`brain/skills/brain-query/SKILL.md`).
@@ -40,7 +40,7 @@ graph LR
 
 ---
 
-### Stage 3: Core Implementation, Testing & CI (Current)
+### Stage 3: Core Implementation, Testing & CI (Completed)
 
 Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A box is ticked only when the work is merged to `main` with a reviewed, green PR.
 
@@ -49,14 +49,14 @@ Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A 
 | 3.1 Data access, SQLite WAL configuration, schema + triggers, `BEGIN IMMEDIATE` manager | Akshaya (platform), Geethika (ADR-009) | #5, #12 | yes | [x] #23, #24 |
 | 3.2a `auth`, `wallet`, admin directory, health, security | Akshaya | #5 | yes | [x] #23 |
 | 3.2b `ledger`, `idempotency`, funding, reversals, `reconciliation`, admin ledger views | Geethika | #9, #10 | yes | [x] #24 |
-| 3.2c `transfer`: transfers, payments, merchant views, history | Suhasini | #13 | yes | [ ] |
-| 3.3 Automated tests TQ-1..TQ-6 (153 tests, 96.5% line coverage) | all three, per module | #5, #9, #13, #14 | yes | [ ] |
-| 3.4 `simulate-transfer` skill + evaluations | Suhasini | #15 | yes | [ ] |
+| 3.2c `transfer`: transfers, payments, merchant views, history | Suhasini | #13 | yes | [x] #25, #26 |
+| 3.3 Automated tests TQ-1..TQ-6 (153 tests, 96.5% line coverage) | all three, per module | #5, #9, #13, #14 | yes | [x] #23, #24, #25, #26 |
+| 3.4 `simulate-transfer` skill + evaluations | Suhasini | #15 | yes | [x] #25 |
 | 3.5 `local-check` skill + evaluations | Akshaya | #6 | yes | [x] #23 |
-| 3.6 CI: build, lint, tests, secrets (Akshaya); brain validation (Geethika); skill validation (Suhasini) | all three | #7, #11, #16 | yes (locally) | [ ] |
-| 3.7 Brain refine, notes by every member, stage review notes | all three | #8, #11, #17 | yes | [ ] |
-| 3.8 Test plan (Geethika), test report, defect log, traceability, CHANGELOG (Suhasini) | Geethika, Suhasini | #12, #17 | yes | [ ] |
-| 3.9 Release tag `v0.3.0-stage3` | Suhasini | #17 | - | [ ] |
+| 3.6 CI: build, lint, tests, secrets (Akshaya); brain validation (Geethika); skill validation (Suhasini) | all three | #7, #11, #16 | yes (and green on every PR) | [x] #23, #24, #25 |
+| 3.7 Brain refine, notes by every member, stage review notes | all three | #8, #11, #17 | yes | [x] #23, #24, #25, #28 |
+| 3.8 Test plan (Geethika), test report, defect log, traceability, CHANGELOG (Suhasini) | Geethika, Suhasini | #12, #17 | yes | [x] #24, #25, #26, #27, #28 |
+| 3.9 Release tag `v0.3.0-stage3` | Suhasini | #17 | - | [x] tagged on the merge of the release PR |
 
 ---
 
