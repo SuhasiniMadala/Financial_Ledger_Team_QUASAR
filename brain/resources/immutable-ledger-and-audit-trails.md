@@ -1,3 +1,10 @@
+---
+title: "Immutable Ledger and Audit Trails"
+type: resource
+authors: [Akshaya A]
+created: 2026-11-26
+---
+
 # Immutable Ledger and Audit Trails
 
 ## Summary

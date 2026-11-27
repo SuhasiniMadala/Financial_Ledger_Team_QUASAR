@@ -146,3 +146,10 @@ sequenceDiagram
         ReconCtrl-->>Admin: 200 OK (Report: FAIL with detailed diffs)
     end
 ```
+
+## 5. Stage 3 implementation notes
+
+- **Write lock first.** Every read-write transaction starts with `BEGIN IMMEDIATE` through `SqliteImmediateTransactionManager` (ADR-009). The idempotency lookup, rule checks, ledger posting and stored response all run inside it, exactly in the order of the sequence diagram in section 3. If the lock is busy longer than `busy_timeout`, the request ends with `503 SERVICE_BUSY` and nothing changed.
+- **Reads.** Read-only transactions use SQLite's deferred begin, which in WAL mode gives one consistent snapshot without blocking the writer (reconciliation, listings).
+- **Module dependencies** (checked by `ArchitectureRulesTest`, acyclic): `auth -> wallet`, `ledger -> wallet`, `transfer -> ledger, idempotency, wallet, auth`, `admin -> ledger, idempotency, wallet, auth, reconciliation`; `idempotency`, `reconciliation`, `health` depend only on `common`. Roles and the caller identity live in `common.security` so `auth` and `wallet` do not depend on each other.
+- **Sole writer** (NFR-MAIN-02): only `module/ledger` inserts entries or changes balances; enforced by `ArchitectureRulesTest`.

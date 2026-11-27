@@ -1,3 +1,10 @@
+---
+title: "Double-Entry Accounting Principles and Ledger Modeling"
+type: resource
+authors: [Akshaya A]
+created: 2026-11-26
+---
+
 # Double-Entry Accounting Principles and Ledger Modeling
 
 ## Summary

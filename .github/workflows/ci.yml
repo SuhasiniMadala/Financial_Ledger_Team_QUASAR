@@ -1,210 +1,6 @@
-# # Financial Ledger CI (SDLC section 4): runs on EVERY pull request and on pushes to main.
-# # Jobs: build, lint, tests (+ coverage rule), secret scanning, SKILL.md validation, brain validation,
-# # and the local-check skill on a clean machine. Documentation: docs/ci/ci-pipeline.md
-# name: Financial Ledger CI
-
-# "on":
-#   pull_request:
-#   push:
-#     branches: [main]
-
-# permissions:
-#   contents: read
-
-# concurrency:
-#   group: ci-${{ github.ref }}
-#   cancel-in-progress: true
-
-# jobs:
-#   build:
-#     name: Build
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 15
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-java@v4
-#         with:
-#           java-version: '17'
-#           distribution: temurin
-#           cache: maven
-#       - name: Compile and package (tests run in the Tests job)
-#         run: mvn -B -ntp -DskipTests -Dcheckstyle.skip=true package
-
-
-#   lint:
-#     name: Lint (Checkstyle)
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 10
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-java@v4
-#         with:
-#           java-version: '17'
-#           distribution: temurin
-#           cache: maven
-#       - name: Checkstyle - fails on any violation
-#         run: mvn -B -ntp checkstyle:check
-
-
-#   test:
-#     name: Tests and coverage
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 25
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-java@v4
-#         with:
-#           java-version: '17'
-#           distribution: temurin
-#           cache: maven
-#       - name: Full test suite on fresh databases + JaCoCo coverage rule (NFR-TEST-05, NFR-TEST-07)
-#         run: mvn -B -ntp verify
-#       - name: Keep test and coverage reports
-#         if: always()
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: test-reports
-#           path: |
-#             target/surefire-reports/
-#             target/site/jacoco/
-#           retention-days: 14
-
-
-#   secret-scan:
-#     name: Secret scanning (gitleaks)
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 10
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-#       - uses: gitleaks/gitleaks-action@v2
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-#   validate-skills:
-#     name: Validate Agent Skills
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Check out repository
-#         uses: actions/checkout@v4
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.11'
-
-#       - name: Validate SKILL.md frontmatter and naming
-#         run: |
-#           python3 -c "
-#           import os, sys, glob, re
-
-#           skill_files = glob.glob('**/SKILL.md', recursive=True)
-#           # filter out .git
-#           skill_files = [f for f in skill_files if not f.startswith('.git')]
-#           if not skill_files:
-#               print('No skill files found!')
-#               sys.exit(1)
-
-#           errors = 0
-#           for fpath in skill_files:
-#               with open(fpath, 'r', encoding='utf-8') as f:
-#                   content = f.read()
-#               if not content.startswith('---'):
-#                   print(f'Error in {fpath}: Missing leading YAML frontmatter separator ---')
-#                   errors += 1
-#               if not re.search(r'^name:\s+[\w\-]+', content, re.MULTILINE):
-#                   print(f'Error in {fpath}: Missing valid name field in frontmatter')
-#                   errors += 1
-#               if not re.search(r'^description:\s+.+', content, re.MULTILINE):
-#                   print(f'Error in {fpath}: Missing valid description field in frontmatter')
-#                   errors += 1
-#               print(f'Validated skill: {fpath}')
-
-#           if errors > 0:
-#               sys.exit(1)
-#           print('All SKILL.md files are valid!')
-#           "
-
-
-#   validate-brain-notes:
-#     name: Validate Second Brain Notes
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Check out repository
-#         uses: actions/checkout@v4
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.11'
-
-#       - name: Verify Brain Notes and Wikilinks
-#         run: |
-#           python3 -c "
-#           import os, sys, glob, re
-
-#           brain_files = glob.glob('brain/**/*.md', recursive=True)
-#           print(f'Found {len(brain_files)} notes in brain vault.')
-#           if len(brain_files) < 10:
-#               print(f'Error: Expected at least 10 notes, found {len(brain_files)}')
-#               sys.exit(1)
-
-#           note_names = {os.path.splitext(os.path.basename(f))[0] for f in brain_files}
-
-#           broken_links = 0
-#           for fpath in brain_files:
-#               with open(fpath, 'r', encoding='utf-8') as f:
-#                   text = f.read()
-#               wikilinks = re.findall(r'\[\[(.*?)\]\]', text)
-#               for link in wikilinks:
-#                   target = link.strip().lower().replace(' ', '-')
-#                   if target not in note_names and link.strip() not in note_names:
-#                       print(f'Warning: Broken wikilink [[{link}]] in {fpath}')
-
-#           print('Brain validation completed successfully!')
-#           "
-
-
-#   local-check:
-#     name: local-check skill on a clean machine
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 25
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-java@v4
-#         with:
-#           java-version: '17'
-#           distribution: temurin
-#           cache: maven
-#       - name: Run local-check (build, tests, start, GET /api/v1/health, stop)
-#         shell: pwsh
-#         run: ./brain/skills/local-check/scripts/local-check.ps1 -ReportPath target/local-check-report.md
-#       - name: Show the report on the run summary page
-#         if: always()
-#         run: cat target/local-check-report.md >> "$GITHUB_STEP_SUMMARY" || true
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Financial Ledger CI (SDLC section 4)
-# Runs on every pull request and on pushes to main.
-# Seven jobs:
-# build, lint, tests + coverage, secret scanning,
-# SKILL.md validation, brain validation, and local-check.
-
+# Financial Ledger CI (SDLC section 4): runs on EVERY pull request and on pushes to main.
+# Jobs: build, lint, tests (+ coverage rule), secret scanning, SKILL.md validation, brain validation,
+# and the local-check skill on a clean machine. Documentation: docs/ci/ci-pipeline.md
 name: Financial Ledger CI
 
 "on":
@@ -220,63 +16,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  # 1. BUILD
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
           cache: maven
-
-      - name: Compile and package
+      - name: Compile and package (tests run in the Tests job)
         run: mvn -B -ntp -DskipTests -Dcheckstyle.skip=true package
 
 
-  # 2. LINT
   lint:
     name: Lint (Checkstyle)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
           cache: maven
-
-      - name: Checkstyle - fail on violations
+      - name: Checkstyle - fails on any violation
         run: mvn -B -ntp checkstyle:check
 
 
-  # 3. TESTS AND COVERAGE
   test:
     name: Tests and coverage
     runs-on: ubuntu-latest
     timeout-minutes: 25
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
           cache: maven
-
-      - name: Full test suite and JaCoCo coverage
+      - name: Full test suite on fresh databases + JaCoCo coverage rule (NFR-TEST-05, NFR-TEST-07)
         run: mvn -B -ntp verify
-
       - name: Keep test and coverage reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -288,27 +70,22 @@ jobs:
           retention-days: 14
 
 
-  # 4. SECRET SCANNING
   secret-scan:
     name: Secret scanning (gitleaks)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-  # 5. SKILL VALIDATION
   validate-skills:
     name: Validate Agent Skills
     runs-on: ubuntu-latest
-    timeout-minutes: 10
 
     steps:
       - name: Check out repository
@@ -320,174 +97,67 @@ jobs:
           python-version: '3.11'
 
       - name: Validate SKILL.md frontmatter and naming
-        shell: python
         run: |
-          import sys
-          import glob
-          import re
+          python3 -c "
+          import os, sys, glob, re
 
           skill_files = glob.glob('**/SKILL.md', recursive=True)
-          skill_files = [
-              path for path in skill_files
-              if not path.startswith('.git/')
-          ]
-
+          # filter out .git
+          skill_files = [f for f in skill_files if not f.startswith('.git')]
           if not skill_files:
-              print('ERROR: No SKILL.md files found!')
+              print('No skill files found!')
               sys.exit(1)
 
           errors = 0
-
-          for path in skill_files:
-              with open(path, encoding='utf-8') as file:
-                  content = file.read()
-
-              if not content.startswith('---\n'):
-                  print(f'ERROR: {path}: Missing YAML frontmatter.')
+          for fpath in skill_files:
+              with open(fpath, 'r', encoding='utf-8') as f:
+                  content = f.read()
+              if not content.startswith('---'):
+                  print(f'Error in {fpath}: Missing leading YAML frontmatter separator ---')
                   errors += 1
-                  continue
-
-              parts = content.split('---', 2)
-
-              if len(parts) < 3:
-                  print(f'ERROR: {path}: Frontmatter is not closed.')
+              if not re.search(r'^name:\s+[\w\-]+', content, re.MULTILINE):
+                  print(f'Error in {fpath}: Missing valid name field in frontmatter')
                   errors += 1
-                  continue
-
-              frontmatter = parts[1]
-
-              if not re.search(
-                  r'^name:\s*[\w-]+\s*$',
-                  frontmatter,
-                  re.MULTILINE
-              ):
-                  print(f'ERROR: {path}: Missing valid name field.')
+              if not re.search(r'^description:\s+.+', content, re.MULTILINE):
+                  print(f'Error in {fpath}: Missing valid description field in frontmatter')
                   errors += 1
+              print(f'Validated skill: {fpath}')
 
-              if not re.search(
-                  r'^description:\s*.+$',
-                  frontmatter,
-                  re.MULTILINE
-              ):
-                  print(f'ERROR: {path}: Missing description field.')
-                  errors += 1
-
-              if not errors:
-                  print(f'Validated: {path}')
-
-          if errors:
-              print(f'Skill validation FAILED: {errors} error(s).')
+          if errors > 0:
               sys.exit(1)
+          print('All SKILL.md files are valid!')
+          "
 
-          print(f'All {len(skill_files)} SKILL.md files are valid!')
 
-
-  # 6. SECOND BRAIN VALIDATION
-  validate-brain-notes:
-    name: Validate Second Brain Notes
+  brain:
+    name: Validate brain notes
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Verify Brain Notes and Wikilinks
-        shell: python
-        run: |
-          import os
-          import sys
-          import glob
-          import re
-
-          brain_files = [
-                path for path in glob.glob('brain/**/*.md', recursive=True)
-                if not path.startswith('brain/skills/')
-            ]
-
-          print(f'Found {len(brain_files)} notes in brain vault.')
-
-          if len(brain_files) < 10:
-              print(
-                  f'ERROR: Expected at least 10 notes, '
-                  f'found {len(brain_files)}.'
-              )
-              sys.exit(1)
-
-          # Build a case-insensitive index of note filenames.
-          note_names = {
-              os.path.splitext(os.path.basename(path))[0].lower()
-              for path in brain_files
-          }
-
-          broken_links = 0
-
-          for path in brain_files:
-              with open(path, encoding='utf-8') as file:
-                  content = file.read()
-
-              wikilinks = re.findall(r'\[\[(.*?)\]\]', content)
-
-              for link in wikilinks:
-                  # Support aliases such as [[Target|Display text]]
-                  target = link.split('|', 1)[0].strip()
-
-                  # Support heading links such as [[Target#Section]]
-                  target = target.split('#', 1)[0].strip()
-
-                  normalized_target = target.lower().replace(' ', '-')
-
-                  if (
-                      normalized_target not in note_names
-                      and target.lower() not in note_names
-                  ):
-                      print(
-                          f'ERROR: Broken wikilink [[{link}]] '
-                          f'in {path}'
-                      )
-                      broken_links += 1
-
-          if broken_links > 0:
-              print(
-                  f'Brain validation FAILED: '
-                  f'{broken_links} broken wikilink(s).'
-              )
-              sys.exit(1)
-
-          print('Brain validation completed successfully!')
-
-
-  # 7. LOCAL-CHECK
-  local-check:
-    name: local-check skill on a clean machine
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
           cache: maven
+      - name: PARA structure, note schema, broken wikilinks, ADR citations (BrainVaultTest)
+        run: mvn -B -ntp -Dcheckstyle.skip=true -Djacoco.skip=true -Dtest=BrainVaultTest test
 
-      - name: Run local-check
+
+  local-check:
+    name: local-check skill on a clean machine
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+      - name: Run local-check (build, tests, start, GET /api/v1/health, stop)
         shell: pwsh
-        run: |
-          ./brain/skills/local-check/scripts/local-check.ps1 `
-            -ReportPath target/local-check-report.md
-
-      - name: Show report on the run summary page
+        run: ./brain/skills/local-check/scripts/local-check.ps1 -ReportPath target/local-check-report.md
+      - name: Show the report on the run summary page
         if: always()
-        run: |
-          if [ -f target/local-check-report.md ]; then
-            cat target/local-check-report.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Local-check report was not generated." >> "$GITHUB_STEP_SUMMARY"
-          fi
+        run: cat target/local-check-report.md >> "$GITHUB_STEP_SUMMARY" || true

@@ -1,3 +1,10 @@
+---
+title: "Financial Reconciliation and Auditability"
+type: resource
+authors: [Akshaya A]
+created: 2026-11-26
+---
+
 # Financial Reconciliation and Auditability
 
 ## Summary

@@ -1,3 +1,10 @@
+---
+title: "API Security and Input Validation"
+type: resource
+authors: [Akshaya A]
+created: 2026-11-26
+---
+
 # API Security and Input Validation
 
 ## Summary
