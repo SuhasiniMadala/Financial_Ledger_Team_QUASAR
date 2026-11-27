@@ -19,5 +19,6 @@ Every ADR documents:
 - [ADR-006: Stateless Authentication via JWT and Role-Based Authorization](ADR-006-stateless-jwt-auth-rbac.md)
 - [ADR-007: Non-Blocking Point-in-Time Ledger Reconciliation](ADR-007-non-blocking-ledger-reconciliation.md)
 - [ADR-008: Supported Currencies (TBD-1) and Per-Transaction Limit (TBD-2)](ADR-008-supported-currencies-and-transaction-limit.md) - Stage 3, Akshaya A
+- [ADR-009: Explicit BEGIN IMMEDIATE in a Custom Transaction Manager (refines ADR-002)](ADR-009-explicit-begin-immediate-transaction-manager.md) - Stage 3, Geethika M
 
-CI will check SB-3 for every ADR once the brain validator is added (M2 PR).
+CI checks SB-3 for every ADR: `BrainVaultTest.everyAdrCitesADistilledNote` fails if an ADR cites no note from `brain/resources/`.
