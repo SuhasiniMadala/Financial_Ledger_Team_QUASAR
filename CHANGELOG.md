@@ -2,9 +2,13 @@
 
 All notable changes to this project. Format based on "Keep a Changelog"; versions follow `v<major>.<minor>.<patch>-stage<N>` (see `docs/branching-strategy.md`).
 
-## [Unreleased] - v0.3.0-stage3 (Stage 3: Testing and CI)
+## [Unreleased]
 
-The tag is created only after the three Stage 3 PRs are reviewed, merged and green on `main`.
+Stage 4 (React client and final demonstration) - nothing yet.
+
+## v0.3.0-stage3 - 2026-11-27 (Stage 3: Testing and CI)
+
+Merged in PRs #23 (M1 Akshaya), #24 (M2 Geethika), #25 and #26 (M3 Suhasini), #27 and #28 (CI results and review notes), then tagged `v0.3.0-stage3` with CI green on `main`.
 
 ### Added
 - Complete REST API from SRS Table 3-1: registration and login with JWT, wallets, admin directory and wallet status, idempotent test funding, transfers, merchant payments, reversals, reconciliation, statistics, user and merchant views, `GET /api/v1/health` (M1 Akshaya, M2 Geethika, M3 Suhasini).
