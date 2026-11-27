@@ -61,6 +61,9 @@ Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A 
 ---
 
 ### Stage 4: Frontend, Verification & Review (Final Stage)
+
+Detailed plan, owners, PR order and acceptance criteria: `docs/stage-4/MASTER_PLAN.md` (proposal, needs team approval).
+
 - [ ] **Task 4.1: Minimal React Web Interface**:
   - User Dashboard, Transfer screen, Merchant Payment screen.
   - Merchant transaction views and statistics.

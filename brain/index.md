@@ -14,6 +14,7 @@ Entry point of the Obsidian vault. Organised by actionability (PARA, SDLC sectio
 
 - [[stage-3-testing-and-ci]] - Stage 3 plan, owners and deliverables
 - [[stage-3-review]] - Stage 3 review note (SB-2)
+- [[stage-4-client-and-review]] - Stage 4 plan, owners and deliverables (React client, live review, release)
 - AI-session notes (SDLC 6): [[2026-11-27-akshaya-accounts-and-platform]], [[2026-11-27-geethika-ledger-and-reconciliation]], [[2026-11-27-suhasini-transfers-and-history]]
 
 ## Areas (ongoing standards)

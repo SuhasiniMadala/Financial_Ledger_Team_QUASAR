@@ -100,3 +100,10 @@ All four notes include summaries, sources, project relevance, and links to relat
 ### Stage 3 release - Suhasini
 
 - PRs #23-#28 merged with reviews; CI green on every PR and on `main` (153 tests, 96.5% line coverage). Release `v0.3.0-stage3` recorded in `CHANGELOG.md`; review note [[stage-3-review]].
+
+## 27 November 2026 - Stage 4 planning
+
+### Audit and plan - Suhasini
+
+- Audited `main` @ `b1be847` for Stage 4: the backend covers all of SRS Table 3-1; no React client exists; gaps G-1 (no display name in the login response), no CORS (use a Vite proxy), no branch protection; SRS v1.4 and the Project Statement not yet in the repository.
+- Plan and per-member instructions in `docs/stage-4/`; project note [[stage-4-client-and-review]].
