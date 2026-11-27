@@ -34,3 +34,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+
+# Local skill outputs and throw-away databases
+*.db-journal
+target/
