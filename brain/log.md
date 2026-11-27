@@ -68,3 +68,9 @@ All four notes include summaries, sources, project relevance, and links to relat
 - **Engineering Planning (`docs/architecture/`)**:
   - Produced Development Plan and Task Breakdown across Stages 1 through 4 (`development-plan.md`).
   - Produced Requirements Traceability Matrix (`traceability-matrix.md`) mapping SRS requirements to ADRs, designs, tests, skills, and brain notes.
+
+## 27 November 2026 - Stage 3 (Testing and CI)
+
+### Notes - Akshaya
+
+- Area note [[api-error-contract-and-access-control]]; review [[stage-1-review]]; AI session [[2026-11-27-akshaya-accounts-and-platform]]; ADR-008.

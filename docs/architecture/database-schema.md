@@ -264,3 +264,21 @@ END;
 ### Retention Policy (DB-05)
 - **Indefinite Retention**: In accordance with `DB-05` and `FR-4`, all records in `ledger_entry`, `transaction_record`, and `wallet_status_change` are retained indefinitely for complete historical and financial auditability.
 - **Time-Bounded Pruning**: In accordance with `DB-05` and `FR-TRF-04`, `idempotency_record` entries are retained for a minimum of 24 hours to handle delayed network retries, after which expired records (`expires_at < current_time`) may be pruned by background cleanup jobs without affecting ledger integrity.
+
+## 4. Stage 3 changes to the design (implemented in `src/main/resources/schema.sql`)
+
+The schema was implemented as designed, with these additions (marked `[S3]` in `schema.sql`):
+
+| Change | Why |
+|---|---|
+| `account.created_at` | wallets are listed and shown with their creation time (FR-WAL-06, FR-ADM-02) |
+| `transaction_record.source_account_id`, `destination_account_id` | a FAILED transaction has no ledger entries, so without these columns it could not be shown in the initiator's history (FR-LED-11, FR-TRF-13) |
+| `transaction_record.description` | transfer description (140), payment reference (64), reversal reason (FR-TRF-01, FR-PAY-01, FR-LED-08) |
+| `CHECK ((status = 'FAILED') = (failure_code IS NOT NULL))` and `CHECK ((type = 'REVERSAL') = (reversal_of_id IS NOT NULL))` | the database rejects inconsistent rows |
+| `UNIQUE INDEX uq_txn_reversal_of ON transaction_record(reversal_of_id)` | BR-10 "reversed once" enforced by the database, not only by code |
+| `typeof(x) = 'integer'` in every money CHECK | SQLite would otherwise store 10.5 in an INTEGER column; this enforces DB-03 / TQ-6 at the storage level |
+| `idempotency_record.response_status IN (201, 422)` | FR-TRF-08: only these outcomes are stored |
+| `reconciliation_run` table | log of reconciliation runs for "latest reconciliation result" (FR-ADM-07); not financial data |
+| The old `DB-06` label in section 3 | refers to the immutability triggers; the SRS numbers them under FR-LED-05 / NFR-SAFE-06 |
+
+The PRAGMAs are applied per connection by `DatabaseConfig` (WAL, `foreign_keys=ON`, `synchronous=FULL`, `busy_timeout`); `DatabaseConfigurationTest` verifies them. Write transactions start with `BEGIN IMMEDIATE` (ADR-009).
