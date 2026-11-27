@@ -2,12 +2,12 @@
 
 ## 1. Project Stages Overview
 
-Following the course SDLC and SRS v1.4, the project is structured into four sequential stages:
+Following the course SDLC and SRS v1.2 (the version in the repository; earlier documents said "v1.4" by mistake), the project is structured into four sequential stages:
 
 ```mermaid
 graph LR
-    S1["Stage 1: Requirements & Setup<br/>(COMPLETED)"] --> S2["Stage 2: Architecture & Design<br/>(CURRENT)"]
-    S2 --> S3["Stage 3: Implementation, Testing & CI"]
+    S1["Stage 1: Requirements & Setup<br/>(COMPLETED)"] --> S2["Stage 2: Architecture & Design<br/>(COMPLETED)"]
+    S2 --> S3["Stage 3: Implementation, Testing & CI<br/>(CURRENT)"]
     S3 --> S4["Stage 4: Verification & Final Demonstration"]
 ```
 
@@ -40,24 +40,23 @@ graph LR
 
 ---
 
-### Stage 3: Core Implementation, Testing & CI (Upcoming)
-- [ ] **Task 3.1: Data Access Layer & SQLite Configuration**:
-  - Spring JDBC repositories, schema initializer, WAL mode configuration, and immutability triggers.
-- [ ] **Task 3.2: Domain Module Implementation**:
-  - `auth`: Registration, BCrypt password hashing, and JWT provider.
-  - `wallet`: Wallet creation, retrieval, and status changes.
-  - `ledger`: Double-entry transaction engine (Sole Writer).
-  - `transfer`: Same-currency P2P transfers and merchant payments.
-  - `idempotency`: SHA-256 fingerprinting and response replay filter.
-  - `reconciliation`: Three-point snapshot audit engine.
-  - `admin`: Platform statistics, test funding, and reversals.
-- [ ] **Task 3.3: Automated Test Suite (TQ-1 to TQ-6)**:
-  - Accounting unit tests (debit/credit balance checks, hash validation).
-  - Transaction rollback integration tests (simulated database failure points).
-  - Concurrency & race condition tests (simultaneous transfers).
-  - Negative tests (overdrafts, invalid payloads, malformed IDs).
-- [ ] **Task 3.4: Product-Specific Skill (`simulate-transfer`)**:
-  - Automated product verification workflow.
+### Stage 3: Core Implementation, Testing & CI (Current)
+
+Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A box is ticked only when the work is merged to `main` with a reviewed, green PR.
+
+| Task | Owner | Issue | Built and tested locally | Merged |
+|---|---|---|---|---|
+| 3.1 Data access, SQLite WAL configuration, schema + triggers, `BEGIN IMMEDIATE` manager | Akshaya (platform), Geethika (ADR-009) | #5, #12 | yes | [x] #23, #24 |
+| 3.2a `auth`, `wallet`, admin directory, health, security | Akshaya | #5 | yes | [x] #23 |
+| 3.2b `ledger`, `idempotency`, funding, reversals, `reconciliation`, admin ledger views | Geethika | #9, #10 | yes | [x] #24 |
+| 3.2c `transfer`: transfers, payments, merchant views, history | Suhasini | #13 | yes | [ ] |
+| 3.3 Automated tests TQ-1..TQ-6 (151 tests, 96.3% line coverage) | all three, per module | #5, #9, #13, #14 | yes | [ ] |
+| 3.4 `simulate-transfer` skill + evaluations | Suhasini | #15 | yes | [ ] |
+| 3.5 `local-check` skill + evaluations | Akshaya | #6 | yes | [x] #23 |
+| 3.6 CI: build, lint, tests, secrets (Akshaya); brain validation (Geethika); skill validation (Suhasini) | all three | #7, #11, #16 | yes (locally) | [ ] |
+| 3.7 Brain refine, notes by every member, stage review notes | all three | #8, #11, #17 | yes | [ ] |
+| 3.8 Test plan (Geethika), test report, defect log, traceability, CHANGELOG (Suhasini) | Geethika, Suhasini | #12, #17 | yes | [ ] |
+| 3.9 Release tag `v0.3.0-stage3` | Suhasini | #17 | - | [ ] |
 
 ---
 
@@ -72,6 +71,16 @@ graph LR
   - Final release tagging and documentation review.
 
 ## 3. Team Responsibilities Matrix
+
+### Stage 3 (functional areas)
+
+| Team Member | Functional area | Shared responsibilities |
+|---|---|---|
+| **Akshaya A** [BT2024215] | Accounts, wallets, admin directory, health, security, platform configuration | `local-check` skill, Checkstyle lint + CI core jobs, README / user guide, ADR-008, reviews M2's PR |
+| **Geethika M** [BT2024139] | Ledger engine, idempotency, test funding, reversals, reconciliation, admin ledger views | brain refine + brain validation in CI, test plan, ADR-009, reviews M3's PR |
+| **Suhasini M** [BT2024043] | Transfers, merchant payments, merchant views, transaction history, concurrency/durability/performance tests | `simulate-transfer` skill, skill validation in CI, traceability, test report, defect log, CHANGELOG, release; reviews M1's PR |
+
+### Stage 2
 
 | Team Member | Core Focus & Responsibilities | Stage 2 Deliverables |
 |---|---|---|

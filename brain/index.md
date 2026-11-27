@@ -12,12 +12,15 @@ Entry point of the Obsidian vault. Organised by actionability (PARA, SDLC sectio
 
 ## Projects (active)
 
-- AI-session notes (SDLC 6): [[2026-11-27-akshaya-accounts-and-platform]], [[2026-11-27-geethika-ledger-and-reconciliation]]
+- [[stage-3-testing-and-ci]] - Stage 3 plan, owners and deliverables
+- [[stage-3-review]] - Stage 3 review note (SB-2)
+- AI-session notes (SDLC 6): [[2026-11-27-akshaya-accounts-and-platform]], [[2026-11-27-geethika-ledger-and-reconciliation]], [[2026-11-27-suhasini-transfers-and-history]]
 
 ## Areas (ongoing standards)
 
 - [[api-error-contract-and-access-control]] - error format, 404-not-403, endpoint checklist
 - [[testing-strategy-and-quality-gates]] - what must pass before a merge; defect workflow (TQ-8)
+- [[ci-pipeline]] - what each CI job proves
 
 ## Resources (distilled - cite these from ADRs and skills, SB-3)
 
@@ -29,6 +32,7 @@ Entry point of the Obsidian vault. Organised by actionability (PARA, SDLC sectio
 6. [[financial-reconciliation-and-auditability]] - checks C1-C3 (ADR-007)
 7. [[monetary-representation-and-integer-units]] - integer paise (ADR-004, ADR-008)
 8. [[api-security-and-input-validation]] - JWT, RBAC, validation (ADR-006)
+9. [[testing-concurrency-and-failure-injection]] - how we test money code (ADR-010) - Stage 3
 
 ## Research (reviewed raw notes, distilled above)
 

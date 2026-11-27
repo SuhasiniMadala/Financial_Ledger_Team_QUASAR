@@ -71,6 +71,11 @@ All four notes include summaries, sources, project relevance, and links to relat
 
 ## 27 November 2026 - Stage 3 (Testing and CI)
 
+### Audit and restart - Suhasini
+
+- Audited the repository against the SDLC and SRS. The unreviewed `stage3-handoff` branch double-charged under concurrent retries; the team decided to delete it (local backup bundle kept) and rebuild Stage 3 from the end of Stage 2.
+- AI session recorded in [[2026-11-27-suhasini-transfers-and-history]].
+
 ### brain-refine run - Geethika
 
 - Moved 17 Stage 1 research notes from `inbox/` to `research/` (already distilled into resources in Stage 2).
@@ -83,3 +88,11 @@ All four notes include summaries, sources, project relevance, and links to relat
 
 - Area note [[api-error-contract-and-access-control]]; review [[stage-1-review]]; AI session [[2026-11-27-akshaya-accounts-and-platform]]; ADR-008.
 
+### Notes - Suhasini
+
+- Distilled note [[testing-concurrency-and-failure-injection]]; area [[ci-pipeline]]; project [[stage-3-testing-and-ci]]; review [[stage-3-review]]; ADR-010.
+
+### Skill runs
+
+- `local-check`, `simulate-transfer -Evaluate` and the brain skills were run for TQ-7; results in `docs/testing/skill-evaluations.md`.
+- `brain-query` example answer recorded in `brain/skills/brain-query/SKILL.md`.
