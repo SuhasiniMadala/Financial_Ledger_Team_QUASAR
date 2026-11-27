@@ -161,6 +161,7 @@ class TransferApiTest extends ApiTestBase {
         assertThat(TransferSteps.transfer(api, asha.token(), ashaWallet, "SYS-FUND-INR", 1_000, newKey()).status()).isEqualTo(400);
         assertThat(storedBalance(ashaWallet)).isEqualTo(500_000);
         assertThat(storedBalance(shop.walletId())).isZero();
+        LedgerSteps.assertReconciles(api, admin);
     }
 
     @Test
@@ -180,6 +181,32 @@ class TransferApiTest extends ApiTestBase {
                 .isEqualTo(3);
         assertThat(storedBalance(ashaWallet)).isEqualTo(500_000);
         assertThat(storedBalance(raviWallet)).isEqualTo(200_000);
+        LedgerSteps.assertReconciles(api, admin);
+    }
+
+    @Test
+    @DisplayName("BR-07: a DEACTIVATED wallet can neither send nor receive -> 422 WALLET_NOT_ACTIVE + FAILED, balances unchanged")
+    void deactivatedWalletsTakeNoPart() {
+        Response deactivated = api.post("/api/v1/admin/wallets/" + raviWallet + "/deactivate",
+                Map.of("reason", "account closed by user"), admin);
+        assertThat(deactivated.text("status")).isEqualTo("DEACTIVATED");
+
+        Response toDeactivated = TransferSteps.transfer(api, asha.token(), ashaWallet, raviWallet, 10_000, newKey());
+        assertThat(toDeactivated.status()).isEqualTo(422);
+        assertThat(toDeactivated.code()).isEqualTo("WALLET_NOT_ACTIVE");
+        Response fromDeactivated = TransferSteps.transfer(api, ravi.token(), raviWallet, ashaWallet, 10_000, newKey());
+        assertThat(fromDeactivated.status()).isEqualTo(422);
+        assertThat(fromDeactivated.code()).isEqualTo("WALLET_NOT_ACTIVE");
+
+        for (Response r : List.of(toDeactivated, fromDeactivated)) {
+            String failed = r.text("transactionId");
+            assertThat(jdbc.queryForObject("SELECT status FROM transaction_record WHERE id = ?", String.class, failed))
+                    .isEqualTo("FAILED");
+            assertThat(count("SELECT COUNT(*) FROM ledger_entry WHERE transaction_id = ?", failed)).isZero();
+        }
+        assertThat(storedBalance(ashaWallet)).isEqualTo(500_000);
+        assertThat(storedBalance(raviWallet)).isEqualTo(200_000);
+        LedgerSteps.assertReconciles(api, admin);
     }
 
     @Test

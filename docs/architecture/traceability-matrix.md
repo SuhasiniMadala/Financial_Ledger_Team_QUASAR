@@ -32,7 +32,7 @@ Requirement -> GitHub Issue -> Pull Request -> Test -> Skill -> Brain note. Upda
 | FR-TRF-13 FAILED record for rejections | #13 | M3 PR | `TransferApiTest.insufficientFunds`, `PaymentAndMerchantApiTest.paymentRejections` | simulate-transfer E02 | [[immutable-ledger-and-audit-trails]] |
 | FR-TRF-14 one transaction: record, debit, credit, balances | #13 | M3 PR | `TransferApiTest.successfulTransfer` | simulate-transfer step 4 | [[double-entry-accounting-principles]] |
 | FR-PAY-01..03 merchant payments | #13 | M3 PR | `PaymentAndMerchantApiTest` | - | [[double-entry-accounting-principles]] |
-| FR-PAY-04..07 merchant account, list, privacy, statistics | #13 | M3 PR | `PaymentAndMerchantApiTest`, `MerchantAverageTest` | - | [[api-error-contract-and-access-control]] |
+| FR-PAY-04..07 merchant account, list, privacy, statistics | #13 | M3 PR | `PaymentAndMerchantApiTest` (incl. `statisticsCountReversedPaymentsAsCompleted`), `MerchantAverageTest` | - | [[api-error-contract-and-access-control]] |
 | FR-CON-01..03 one transaction, lock first, check + debit together | #9 | M2 PR | `LedgerServiceTest.requiresSurroundingTransaction`, `ConcurrencyApiTest` | simulate-transfer step 4 | [[sqlite-write-lock-and-driver-behaviour]], ADR-002, ADR-009 |
 | FR-CON-04/05 serial equivalence, never negative | #14 | M3 PR | `ConcurrencyApiTest.hundredConcurrentDebits`, `incomingAndOutgoingTogether`, `LedgerServiceTest.otherInvariantViolationsAreRejected` | simulate-transfer step 4 | [[sqlite-concurrency-and-acid-transactions]] |
 | FR-CON-06 busy timeout -> 503 | #14 | M3 PR | `BusyTimeoutTest` | - | [[sqlite-write-lock-and-driver-behaviour]], ADR-009 |
@@ -70,11 +70,11 @@ Requirement -> GitHub Issue -> Pull Request -> Test -> Skill -> Brain note. Upda
 | NFR-MAIN-01/02 modules acyclic, ledger sole writer | #5, #9 | M1 PR, M2 PR | `ArchitectureRulesTest` | - | ADR-001, ADR-003 |
 | NFR-MAIN-03 persistence, clock, IDs behind interfaces | #5 | M1 PR | repository interfaces, `IdGenerator`, `Clock`; `JwtServiceTest` uses a fixed clock; spies replace repositories in rollback tests | - | ADR-001 |
 | NFR-MAIN-04 OpenAPI with headers and error codes | #16 | M3 PR | `OpenApiDocumentationTest` | - | - |
-| NFR-TEST-01..07 (TQ-1..TQ-6) | #12, #14 | all | see `docs/testing/test-plan.md`; coverage 96.3% overall | local-check (step 2) | [[testing-strategy-and-quality-gates]] |
+| NFR-TEST-01..07 (TQ-1..TQ-6) | #12, #14 | all | see `docs/testing/test-plan.md`; coverage 96.5% overall | local-check (step 2) | [[testing-strategy-and-quality-gates]] |
 | DB-01..04 SQLite file, PRAGMAs, integer/CHECK, uniqueness | #5 | M1 PR | `DatabaseConfigurationTest` | local-check | [[sqlite-concurrency-and-acid-transactions]], ADR-002 |
 | DB-05 retention | #9 | M2 PR | immutability triggers; idempotency records kept >= 24 h (never deleted) | - | [[immutable-ledger-and-audit-trails]] |
 | ACC-01..04 system accounts, derived balances, posting rules | #9 | M2 PR | `AdminDirectoryApiTest.listsAccountsIncludingSystemFunding`, `TestFundingApiTest.goldenRule`, `ReversalApiTest`, reconciliation C3 | simulate-transfer step 5 | [[double-entry-accounting-principles]] |
-| BR-01..10 | #9, #13 | M2 PR, M3 PR | amount, currency, destination, status, reversal tests above | simulate-transfer E02-E13 | [[double-entry-accounting-principles]] |
+| BR-01..10 | #9, #13 | M2 PR, M3 PR | amount, currency, destination, status (`TransferApiTest.otherBusinessRules`, `deactivatedWalletsTakeNoPart`, `PaymentAndMerchantApiTest.paymentRejections`), reversal tests above | simulate-transfer E02-E13 | [[double-entry-accounting-principles]] |
 | UI-01..UI-05 React client | - | Stage 4 | not in Stage 3 scope (development plan) | - | - |
 
 ## Skill requirements

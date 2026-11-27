@@ -50,7 +50,7 @@ Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A 
 | 3.2a `auth`, `wallet`, admin directory, health, security | Akshaya | #5 | yes | [x] #23 |
 | 3.2b `ledger`, `idempotency`, funding, reversals, `reconciliation`, admin ledger views | Geethika | #9, #10 | yes | [x] #24 |
 | 3.2c `transfer`: transfers, payments, merchant views, history | Suhasini | #13 | yes | [ ] |
-| 3.3 Automated tests TQ-1..TQ-6 (151 tests, 96.3% line coverage) | all three, per module | #5, #9, #13, #14 | yes | [ ] |
+| 3.3 Automated tests TQ-1..TQ-6 (153 tests, 96.5% line coverage) | all three, per module | #5, #9, #13, #14 | yes | [ ] |
 | 3.4 `simulate-transfer` skill + evaluations | Suhasini | #15 | yes | [ ] |
 | 3.5 `local-check` skill + evaluations | Akshaya | #6 | yes | [x] #23 |
 | 3.6 CI: build, lint, tests, secrets (Akshaya); brain validation (Geethika); skill validation (Suhasini) | all three | #7, #11, #16 | yes (locally) | [ ] |

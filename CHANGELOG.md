@@ -10,7 +10,7 @@ The tag is created only after the three Stage 3 PRs are reviewed, merged and gre
 - Complete REST API from SRS Table 3-1: registration and login with JWT, wallets, admin directory and wallet status, idempotent test funding, transfers, merchant payments, reversals, reconciliation, statistics, user and merchant views, `GET /api/v1/health` (M1 Akshaya, M2 Geethika, M3 Suhasini).
 - Double-entry ledger engine as the sole writer of entries and balances; immutability triggers; FAILED transactions for rejected operations.
 - `BEGIN IMMEDIATE` transaction manager (ADR-009); `503 SERVICE_BUSY` with `Retry-After` on write-lock timeout.
-- 151 automated tests: unit, integration, API, security matrix, concurrency, failure injection, busy lock, durability (kill and restart), OpenAPI coverage, architecture rules, brain and skill validators; JaCoCo rule (>= 70% on the financial modules; 96.3% overall).
+- 153 automated tests: unit, integration, API, security matrix, concurrency, failure injection, busy lock, durability (kill and restart), OpenAPI coverage, architecture rules, brain and skill validators; JaCoCo rule (>= 70% on the financial modules; 96.5% overall).
 - Performance benchmark for NFR-PERF-01..03 (manual run, results in `docs/testing/test-execution-report.md`).
 - Skills: `local-check` script (SK-02) and `simulate-transfer` script with evaluation cases (SK-01); brain skills updated.
 - CI on every pull request: build, Checkstyle lint, tests + coverage, gitleaks, SKILL.md validation, brain validation, local-check.
