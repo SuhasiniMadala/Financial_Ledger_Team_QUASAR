@@ -19,7 +19,7 @@ The full plan is `docs/testing/test-plan.md`; this note is the short version eve
 
 ## How we test money
 
-- Never trust only the status code: check `balance_minor`, the ledger entries and, at the end, reconciliation PASS (NFR-SAFE-02). Patterns are described in docs/testing/test-plan.md.
+- Never trust only the status code: check `balance_minor`, the ledger entries and, at the end, reconciliation PASS (NFR-SAFE-02). Patterns in [[testing-concurrency-and-failure-injection]].
 - Integer minor units only. `ArchitectureRulesTest` fails the build if `float`/`double` appears in production code (TQ-6, [[monetary-representation-and-integer-units]]).
 - Boundaries for every amount field: 0, 1, -1, the limit, the limit + 1, a fraction, a string.
 

@@ -73,4 +73,4 @@ Entry: Stage 2 design accepted. Exit: all tests pass, coverage rule met, no open
 - Performance is measured with a Java load generator instead of JMeter (equivalent measurements; documented deviation) on one developer laptop, not the SRS reference machine.
 - The React client (UI-01..UI-05) is out of Stage 3 scope (Stage 4 per the development plan); its requirements are not tested yet.
 
-Related knowledge: [[testing-strategy-and-quality-gates]].
+Related knowledge: [[testing-strategy-and-quality-gates]], [[testing-concurrency-and-failure-injection]].
