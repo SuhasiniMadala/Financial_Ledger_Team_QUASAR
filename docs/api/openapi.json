@@ -1,0 +1,3283 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Financial Ledger API (Team QUASAR)",
+    "description" : "Double-entry digital wallet and ledger. Money is always an integer number of minor units (amountMinor, paise for INR). Errors use the ErrorResponse schema; codes are listed per operation.",
+    "version" : "0.3.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:53764",
+    "description" : "Generated server url"
+  } ],
+  "paths" : {
+    "/api/v1/wallets" : {
+      "get" : {
+        "tags" : [ "Wallets (USER)" ],
+        "summary" : "List my wallets with balances (FR-WAL-06)",
+        "operationId" : "list",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/WalletResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "Wallets (USER)" ],
+        "summary" : "Create a wallet in a supported currency (FR-WAL-01, FR-WAL-03, FR-WAL-04)",
+        "operationId" : "create",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateWalletRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WalletResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/transfers" : {
+      "post" : {
+        "tags" : [ "Transfers and payments (USER)" ],
+        "summary" : "Transfer to another USER wallet in the same currency (FR-TRF-01..14). 201 on success; 422 with a FAILED transaction ID when a business rule rejects it; a retry with the same key replays the stored response.",
+        "operationId" : "transfer",
+        "parameters" : [ {
+          "name" : "Idempotency-Key",
+          "in" : "header",
+          "description" : "8-64 characters of letters, digits, '-' and '_'. Reuse it only when retrying the same request.",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^[A-Za-z0-9_-]{8,64}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TransferRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "Created. A retry with the same Idempotency-Key returns the stored 201 or 422 unchanged, with header Idempotent-Replayed: true.",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "IDEMPOTENCY_KEY_REUSED, ALREADY_REVERSED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "INSUFFICIENT_FUNDS, WALLET_NOT_ACTIVE, CURRENCY_MISMATCH, SAME_WALLET, INVALID_DESTINATION, NOT_REVERSIBLE",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "SERVICE_BUSY - write lock timeout; retry with the same Idempotency-Key (Retry-After header)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/payments" : {
+      "post" : {
+        "tags" : [ "Transfers and payments (USER)" ],
+        "summary" : "Pay a merchant by merchant code (FR-PAY-01..03). Same rules and responses as transfers.",
+        "operationId" : "pay",
+        "parameters" : [ {
+          "name" : "Idempotency-Key",
+          "in" : "header",
+          "description" : "8-64 characters of letters, digits, '-' and '_'. Reuse it only when retrying the same request.",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^[A-Za-z0-9_-]{8,64}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PaymentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "Created. A retry with the same Idempotency-Key returns the stored 201 or 422 unchanged, with header Idempotent-Replayed: true.",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "IDEMPOTENCY_KEY_REUSED, ALREADY_REVERSED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "INSUFFICIENT_FUNDS, WALLET_NOT_ACTIVE, CURRENCY_MISMATCH, SAME_WALLET, INVALID_DESTINATION, NOT_REVERSIBLE",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "SERVICE_BUSY - write lock timeout; retry with the same Idempotency-Key (Retry-After header)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/auth/register" : {
+      "post" : {
+        "tags" : [ "Authentication (public)" ],
+        "summary" : "Register a USER account (FR-AUTH-01, FR-AUTH-03, FR-AUTH-04)",
+        "operationId" : "register",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RegisterUserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register/merchant" : {
+      "post" : {
+        "tags" : [ "Authentication (public)" ],
+        "summary" : "Register a MERCHANT account with merchant code and INR wallet (FR-AUTH-02, FR-WAL-02)",
+        "operationId" : "registerMerchant",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RegisterMerchantRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login" : {
+      "post" : {
+        "tags" : [ "Authentication (public)" ],
+        "summary" : "Log in and receive a JWT; every failure returns the same 401 (FR-AUTH-06)",
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/wallets/{id}/unfreeze" : {
+      "post" : {
+        "tags" : [ "Admin: directory and wallet status" ],
+        "summary" : "FROZEN -> ACTIVE (FR-ADM-04, FR-ADM-05)",
+        "operationId" : "unfreeze",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StatusChangeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WalletResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/wallets/{id}/test-funding" : {
+      "post" : {
+        "tags" : [ "Admin: funding, reversals and ledger" ],
+        "summary" : "Credit an ACTIVE USER wallet from the System Funding Account (FR-WAL-07/08). Requires Idempotency-Key.",
+        "operationId" : "testFunding",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Idempotency-Key",
+          "in" : "header",
+          "description" : "8-64 characters of letters, digits, '-' and '_'. Reuse it only when retrying the same request.",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^[A-Za-z0-9_-]{8,64}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TestFundingRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "Created. A retry with the same Idempotency-Key returns the stored 201 or 422 unchanged, with header Idempotent-Replayed: true.",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "IDEMPOTENCY_KEY_REUSED, ALREADY_REVERSED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "INSUFFICIENT_FUNDS, WALLET_NOT_ACTIVE, CURRENCY_MISMATCH, SAME_WALLET, INVALID_DESTINATION, NOT_REVERSIBLE",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "SERVICE_BUSY - write lock timeout; retry with the same Idempotency-Key (Retry-After header)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/wallets/{id}/freeze" : {
+      "post" : {
+        "tags" : [ "Admin: directory and wallet status" ],
+        "summary" : "ACTIVE -> FROZEN (FR-ADM-04, FR-ADM-05)",
+        "operationId" : "freeze",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StatusChangeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WalletResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/wallets/{id}/deactivate" : {
+      "post" : {
+        "tags" : [ "Admin: directory and wallet status" ],
+        "summary" : "ACTIVE or FROZEN -> DEACTIVATED, final (FR-ADM-04, FR-ADM-05)",
+        "operationId" : "deactivate",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StatusChangeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WalletResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/transactions/{id}/reversal" : {
+      "post" : {
+        "tags" : [ "Admin: funding, reversals and ledger" ],
+        "summary" : "Reverse a COMPLETED transaction with mirror-image entries (FR-LED-07..10). Requires Idempotency-Key.",
+        "operationId" : "reverse",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Idempotency-Key",
+          "in" : "header",
+          "description" : "8-64 characters of letters, digits, '-' and '_'. Reuse it only when retrying the same request.",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^[A-Za-z0-9_-]{8,64}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ReversalRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "Created. A retry with the same Idempotency-Key returns the stored 201 or 422 unchanged, with header Idempotent-Replayed: true.",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "IDEMPOTENCY_KEY_REUSED, ALREADY_REVERSED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "INSUFFICIENT_FUNDS, WALLET_NOT_ACTIVE, CURRENCY_MISMATCH, SAME_WALLET, INVALID_DESTINATION, NOT_REVERSIBLE",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503" : {
+            "description" : "SERVICE_BUSY - write lock timeout; retry with the same Idempotency-Key (Retry-After header)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/reconciliations" : {
+      "post" : {
+        "tags" : [ "Admin: reconciliation" ],
+        "summary" : "Run a read-only reconciliation (C1 currency totals, C2 transaction balance, C3 stored vs derived balances) and return the report (FR-REC-01..08)",
+        "operationId" : "run",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReconciliationReport"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/wallets/{id}" : {
+      "get" : {
+        "tags" : [ "Wallets (USER)" ],
+        "summary" : "Get one of my wallets; another user's wallet returns 404 (FR-AUTH-09)",
+        "operationId" : "get",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WalletResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/transactions" : {
+      "get" : {
+        "tags" : [ "Transaction history (USER)" ],
+        "summary" : "My transactions, newest first; filters walletId, type, status, from/to (yyyy-MM-dd) (FR-LED-11)",
+        "operationId" : "list_1",
+        "parameters" : [ {
+          "name" : "walletId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "status",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseUserTransactionView"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/transactions/{id}" : {
+      "get" : {
+        "tags" : [ "Transaction history (USER)" ],
+        "summary" : "One of my transactions with my own entries only (FR-LED-12); otherwise 404 (FR-AUTH-09)",
+        "operationId" : "detail",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserTransactionDetail"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/merchant/transactions" : {
+      "get" : {
+        "tags" : [ "Merchant views (MERCHANT)" ],
+        "summary" : "Payments and reversals on my wallet, newest first, optional from/to (yyyy-MM-dd) (FR-PAY-05/06)",
+        "operationId" : "transactions",
+        "parameters" : [ {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseMerchantTransactionView"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/merchant/statistics" : {
+      "get" : {
+        "tags" : [ "Merchant views (MERCHANT)" ],
+        "summary" : "Count, total and half-even average of completed payments; default last 30 days (FR-PAY-07)",
+        "operationId" : "statistics",
+        "parameters" : [ {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MerchantStatisticsResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/merchant/account" : {
+      "get" : {
+        "tags" : [ "Merchant views (MERCHANT)" ],
+        "summary" : "Business name, merchant code, wallet, balance and status (FR-PAY-04)",
+        "operationId" : "account",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MerchantAccountResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/health" : {
+      "get" : {
+        "tags" : [ "Health (public)" ],
+        "summary" : "Health check: reads the account table; 200 UP or 503 DOWN",
+        "operationId" : "health",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users" : {
+      "get" : {
+        "tags" : [ "Admin: directory and wallet status" ],
+        "summary" : "List users (FR-ADM-01)",
+        "operationId" : "users",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseUserSummaryResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/transactions" : {
+      "get" : {
+        "tags" : [ "Admin: funding, reversals and ledger" ],
+        "summary" : "List all transactions, newest first, filtered by type, status, date (yyyy-MM-dd) and wallet (FR-ADM-03)",
+        "operationId" : "transactions_1",
+        "parameters" : [ {
+          "name" : "type",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "status",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "from",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseTransactionView"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/transactions/{id}" : {
+      "get" : {
+        "tags" : [ "Admin: funding, reversals and ledger" ],
+        "summary" : "One transaction with all its ledger entries (FR-ADM-03)",
+        "operationId" : "transaction",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TransactionDetailResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/statistics" : {
+      "get" : {
+        "tags" : [ "Admin: funding, reversals and ledger" ],
+        "summary" : "Platform statistics (FR-ADM-07)",
+        "operationId" : "statistics_1",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StatisticsResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/merchants" : {
+      "get" : {
+        "tags" : [ "Admin: directory and wallet status" ],
+        "summary" : "List merchants with merchant codes (FR-ADM-01)",
+        "operationId" : "merchants",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseUserSummaryResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/accounts" : {
+      "get" : {
+        "tags" : [ "Admin: directory and wallet status" ],
+        "summary" : "List all accounts including System Funding Accounts (FR-ADM-02)",
+        "operationId" : "accounts",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseAccountSummaryResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/admin/accounts/{id}/entries" : {
+      "get" : {
+        "tags" : [ "Admin: funding, reversals and ledger" ],
+        "summary" : "Ledger entries of any account, newest first (FR-ADM-03)",
+        "operationId" : "entries",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseLedgerEntryView"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "VALIDATION_ERROR (and IDEMPOTENCY_KEY_REQUIRED on starred endpoints)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "UNAUTHENTICATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "FORBIDDEN",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "NOT_FOUND (missing or not yours)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "INTERNAL_ERROR - rolled back, no partial effect",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "CreateWalletRequest" : {
+        "required" : [ "currency" ],
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "pattern" : "^[A-Z]{3}$",
+            "type" : "string"
+          }
+        }
+      },
+      "WalletResponse" : {
+        "type" : "object",
+        "properties" : {
+          "walletId" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "balanceMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "balanceFormatted" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TransferRequest" : {
+        "required" : [ "amountMinor", "destinationWalletId", "sourceWalletId" ],
+        "type" : "object",
+        "properties" : {
+          "sourceWalletId" : {
+            "pattern" : "^W-[0-9A-Z]{10}$",
+            "type" : "string"
+          },
+          "destinationWalletId" : {
+            "pattern" : "^W-[0-9A-Z]{10}$",
+            "type" : "string"
+          },
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "description" : {
+            "maxLength" : 140,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }
+      },
+      "PaymentRequest" : {
+        "required" : [ "amountMinor", "merchantCode", "sourceWalletId" ],
+        "type" : "object",
+        "properties" : {
+          "sourceWalletId" : {
+            "pattern" : "^W-[0-9A-Z]{10}$",
+            "type" : "string"
+          },
+          "merchantCode" : {
+            "pattern" : "^MER-[0-9A-Z]{6}$",
+            "type" : "string"
+          },
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "reference" : {
+            "maxLength" : 64,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }
+      },
+      "RegisterUserRequest" : {
+        "required" : [ "displayName", "email", "password" ],
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "email" : {
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "password" : {
+            "maxLength" : 72,
+            "minLength" : 8,
+            "type" : "string"
+          }
+        }
+      },
+      "RegistrationResponse" : {
+        "type" : "object",
+        "properties" : {
+          "accountId" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "merchantCode" : {
+            "type" : "string"
+          },
+          "walletId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RegisterMerchantRequest" : {
+        "required" : [ "businessName", "email", "password" ],
+        "type" : "object",
+        "properties" : {
+          "businessName" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "email" : {
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "password" : {
+            "maxLength" : 72,
+            "minLength" : 8,
+            "type" : "string"
+          }
+        }
+      },
+      "LoginRequest" : {
+        "required" : [ "email", "password" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "maxLength" : 254,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "password" : {
+            "maxLength" : 200,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }
+      },
+      "LoginResponse" : {
+        "type" : "object",
+        "properties" : {
+          "accessToken" : {
+            "type" : "string"
+          },
+          "tokenType" : {
+            "type" : "string"
+          },
+          "expiresInSeconds" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "accountId" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          }
+        }
+      },
+      "StatusChangeRequest" : {
+        "required" : [ "reason" ],
+        "type" : "object",
+        "properties" : {
+          "reason" : {
+            "maxLength" : 500,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }
+      },
+      "TestFundingRequest" : {
+        "required" : [ "amountMinor" ],
+        "type" : "object",
+        "properties" : {
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "description" : {
+            "maxLength" : 140,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }
+      },
+      "ReversalRequest" : {
+        "required" : [ "reason" ],
+        "type" : "object",
+        "properties" : {
+          "reason" : {
+            "maxLength" : 500,
+            "minLength" : 10,
+            "type" : "string"
+          }
+        }
+      },
+      "Counts" : {
+        "type" : "object",
+        "properties" : {
+          "accounts" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "transactions" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "entries" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "CurrencyTotals" : {
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "type" : "string"
+          },
+          "totalDebitsMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalCreditsMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalDebitsFormatted" : {
+            "type" : "string"
+          },
+          "totalCreditsFormatted" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Discrepancy" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          },
+          "subjectId" : {
+            "type" : "string"
+          },
+          "expectedMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "actualMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "differenceMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "detail" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ReconciliationReport" : {
+        "type" : "object",
+        "properties" : {
+          "runId" : {
+            "type" : "string"
+          },
+          "runAt" : {
+            "type" : "string"
+          },
+          "durationMs" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "result" : {
+            "type" : "string"
+          },
+          "currencies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CurrencyTotals"
+            }
+          },
+          "checked" : {
+            "$ref" : "#/components/schemas/Counts"
+          },
+          "discrepancies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Discrepancy"
+            }
+          }
+        }
+      },
+      "PageResponseUserTransactionView" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UserTransactionView"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "UserTransactionView" : {
+        "type" : "object",
+        "properties" : {
+          "transactionId" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "direction" : {
+            "type" : "string"
+          },
+          "walletId" : {
+            "type" : "string"
+          },
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "amountFormatted" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "counterpartyName" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "failureCode" : {
+            "type" : "string"
+          },
+          "reversalOfId" : {
+            "type" : "string"
+          },
+          "reversedBy" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          }
+        }
+      },
+      "LedgerEntryView" : {
+        "type" : "object",
+        "properties" : {
+          "entryId" : {
+            "type" : "string"
+          },
+          "sequenceNo" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "transactionId" : {
+            "type" : "string"
+          },
+          "accountId" : {
+            "type" : "string"
+          },
+          "direction" : {
+            "type" : "string"
+          },
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "balanceAfterMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "createdAt" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UserTransactionDetail" : {
+        "type" : "object",
+        "properties" : {
+          "transaction" : {
+            "$ref" : "#/components/schemas/UserTransactionView"
+          },
+          "ownEntries" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LedgerEntryView"
+            }
+          }
+        }
+      },
+      "MerchantTransactionView" : {
+        "type" : "object",
+        "properties" : {
+          "transactionId" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "direction" : {
+            "type" : "string"
+          },
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "amountFormatted" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "payerName" : {
+            "type" : "string"
+          },
+          "reference" : {
+            "type" : "string"
+          },
+          "reversalOfId" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PageResponseMerchantTransactionView" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MerchantTransactionView"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "MerchantStatisticsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "paymentCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalFormatted" : {
+            "type" : "string"
+          },
+          "averageMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "averageFormatted" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MerchantAccountResponse" : {
+        "type" : "object",
+        "properties" : {
+          "businessName" : {
+            "type" : "string"
+          },
+          "merchantCode" : {
+            "type" : "string"
+          },
+          "walletId" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "balanceMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "balanceFormatted" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PageResponseUserSummaryResponse" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UserSummaryResponse"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "UserSummaryResponse" : {
+        "type" : "object",
+        "properties" : {
+          "accountId" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "registeredAt" : {
+            "type" : "string"
+          },
+          "merchantCode" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PageResponseTransactionView" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TransactionView"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "TransactionView" : {
+        "type" : "object",
+        "properties" : {
+          "transactionId" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "amountMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "amountFormatted" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "initiatedBy" : {
+            "type" : "string"
+          },
+          "sourceAccountId" : {
+            "type" : "string"
+          },
+          "destinationAccountId" : {
+            "type" : "string"
+          },
+          "reversalOfId" : {
+            "type" : "string"
+          },
+          "reversedBy" : {
+            "type" : "string"
+          },
+          "failureCode" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TransactionDetailResponse" : {
+        "type" : "object",
+        "properties" : {
+          "transaction" : {
+            "$ref" : "#/components/schemas/TransactionView"
+          },
+          "entries" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LedgerEntryView"
+            }
+          }
+        }
+      },
+      "CompletedTotal" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalFormatted" : {
+            "type" : "string"
+          }
+        }
+      },
+      "LatestReconciliation" : {
+        "type" : "object",
+        "properties" : {
+          "runId" : {
+            "type" : "string"
+          },
+          "runAt" : {
+            "type" : "string"
+          },
+          "result" : {
+            "type" : "string"
+          },
+          "discrepancyCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "StatisticsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "users" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "merchants" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "walletsByStatus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "transactionsByStatus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "completedTotals" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CompletedTotal"
+            }
+          },
+          "latestReconciliation" : {
+            "$ref" : "#/components/schemas/LatestReconciliation"
+          }
+        }
+      },
+      "AccountSummaryResponse" : {
+        "type" : "object",
+        "properties" : {
+          "accountId" : {
+            "type" : "string"
+          },
+          "ownerId" : {
+            "type" : "string"
+          },
+          "ownerName" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "currency" : {
+            "type" : "string"
+          },
+          "balanceMinor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "balanceFormatted" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PageResponseAccountSummaryResponse" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AccountSummaryResponse"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "PageResponseLedgerEntryView" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LedgerEntryView"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "requestId" : {
+            "type" : "string"
+          },
+          "transactionId" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  }
+}
