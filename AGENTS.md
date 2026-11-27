@@ -31,12 +31,28 @@ Before implementing any feature or modifying any code or tests, agents and devel
 
 ## Git & Team Guidelines
 
-1. Do not commit directly to `main` for major features or changes.
-2. Work on dedicated feature branches (e.g., `akshaya/my-contribution` or `feature/<name>`).
-3. Write meaningful, conventional commit messages.
-4. Review all changes through pull requests before merging. Every PR requires at least one review.
-5. Never commit passwords, tokens, API keys, or sensitive credentials to the repository.
-6. CI pipelines must pass on every pull request (build, test, secret scanning, SKILL.md validation, brain note validation).
+1. Never commit directly to `main`. Follow `docs/branching-strategy.md` (branches `stage3/member-<n>-<area>`, merge order M1 -> M2 -> M3).
+2. Each member commits only their own work from their own Git identity (SB-6). Agents must never commit, push or open pull requests under another person's account.
+3. Write meaningful commit messages and reference the issue (`Refs #12`, `Closes #12`).
+4. Every change (code, skills, brain) goes through a pull request with at least one approving review by another member (SB-5).
+5. Never commit passwords, tokens, API keys, or sensitive credentials. The JWT secret and admin password are environment variables only.
+6. CI must be green on every pull request: build, lint, tests + coverage, secret scanning, SKILL.md validation, brain validation, local-check (`docs/ci/ci-pipeline.md`).
+
+## Commands agents and developers use
+
+| Purpose | Command (repository root) |
+|---|---|
+| Full check before a PR | `mvn -B verify` |
+| One test class | `mvn test -Dtest=TransferApiTest -Djacoco.skip=true` |
+| Brain / skill validation only | `mvn test -Dtest=BrainVaultTest` / `mvn test -Dtest=SkillDefinitionsTest` (add `-Djacoco.skip=true`) |
+| local-check skill | `powershell -ExecutionPolicy Bypass -File brain/skills/local-check/scripts/local-check.ps1` |
+| simulate-transfer skill | see `brain/skills/simulate-transfer/SKILL.md` |
+
+## Testing rules
+
+- Never trust only an HTTP status for money: assert stored balances and end with reconciliation PASS.
+- Every significant defect gets a regression test and a row in `docs/testing/defect-log.md` (TQ-8).
+- Never delete, skip or weaken a failing test to get a green build; never report a result that was not run.
 
 ## Documentation & Second Brain (PARA)
 

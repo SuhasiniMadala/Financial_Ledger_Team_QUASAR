@@ -18,3 +18,6 @@ Every ADR documents:
 - [ADR-005: Idempotency Key Pattern with SHA-256 Request Fingerprinting](ADR-005-idempotency-key-pattern.md)
 - [ADR-006: Stateless Authentication via JWT and Role-Based Authorization](ADR-006-stateless-jwt-auth-rbac.md)
 - [ADR-007: Non-Blocking Point-in-Time Ledger Reconciliation](ADR-007-non-blocking-ledger-reconciliation.md)
+- [ADR-008: Supported Currencies (TBD-1) and Per-Transaction Limit (TBD-2)](ADR-008-supported-currencies-and-transaction-limit.md) - Stage 3, Akshaya A
+
+CI will check SB-3 for every ADR once the brain validator is added (M2 PR).
