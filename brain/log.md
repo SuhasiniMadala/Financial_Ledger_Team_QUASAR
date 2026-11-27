@@ -107,3 +107,9 @@ All four notes include summaries, sources, project relevance, and links to relat
 
 - Audited `main` @ `b1be847` for Stage 4: the backend covers all of SRS Table 3-1; no React client exists; gaps G-1 (no display name in the login response), no CORS (use a Vite proxy), no branch protection; SRS v1.4 and the Project Statement not yet in the repository.
 - Plan and per-member instructions in `docs/stage-4/`; project note [[stage-4-client-and-review]].
+
+## 28 November 2026 - Stage 4 decisions
+
+### Decisions and branch protection - Suhasini
+
+- Team approved D1-D6 (`docs/review/stage-4-audit.md`): build the React client, keep the old `docs/stage-4/` plan deleted, add `displayName` to the login response, tag `v1.0.0-stage4`, protect `main`, and the three-way split. Branch protection enabled on `main` (1 review, 7 required CI checks, applies to admins). Project note [[stage-4-client-and-review]] updated.
