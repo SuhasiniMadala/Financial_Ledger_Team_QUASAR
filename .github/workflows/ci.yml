@@ -30,7 +30,6 @@ jobs:
       - name: Compile and package (tests run in the Tests job)
         run: mvn -B -ntp -DskipTests -Dcheckstyle.skip=true package
 
-
   lint:
     name: Lint (Checkstyle)
     runs-on: ubuntu-latest
@@ -44,7 +43,6 @@ jobs:
           cache: maven
       - name: Checkstyle - fails on any violation
         run: mvn -B -ntp checkstyle:check
-
 
   test:
     name: Tests and coverage
@@ -69,7 +67,6 @@ jobs:
             target/site/jacoco/
           retention-days: 14
 
-
   secret-scan:
     name: Secret scanning (gitleaks)
     runs-on: ubuntu-latest
@@ -82,52 +79,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-  validate-skills:
-    name: Validate Agent Skills
+  skills:
+    name: Validate SKILL.md files
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          python-version: '3.11'
-
-      - name: Validate SKILL.md frontmatter and naming
-        run: |
-          python3 -c "
-          import os, sys, glob, re
-
-          skill_files = glob.glob('**/SKILL.md', recursive=True)
-          # filter out .git
-          skill_files = [f for f in skill_files if not f.startswith('.git')]
-          if not skill_files:
-              print('No skill files found!')
-              sys.exit(1)
-
-          errors = 0
-          for fpath in skill_files:
-              with open(fpath, 'r', encoding='utf-8') as f:
-                  content = f.read()
-              if not content.startswith('---'):
-                  print(f'Error in {fpath}: Missing leading YAML frontmatter separator ---')
-                  errors += 1
-              if not re.search(r'^name:\s+[\w\-]+', content, re.MULTILINE):
-                  print(f'Error in {fpath}: Missing valid name field in frontmatter')
-                  errors += 1
-              if not re.search(r'^description:\s+.+', content, re.MULTILINE):
-                  print(f'Error in {fpath}: Missing valid description field in frontmatter')
-                  errors += 1
-              print(f'Validated skill: {fpath}')
-
-          if errors > 0:
-              sys.exit(1)
-          print('All SKILL.md files are valid!')
-          "
-
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+      - name: Agent Skills format, naming and distilled-note citations (SkillDefinitionsTest)
+        run: mvn -B -ntp -Dcheckstyle.skip=true -Djacoco.skip=true -Dtest=SkillDefinitionsTest test
 
   brain:
     name: Validate brain notes
@@ -142,7 +106,6 @@ jobs:
           cache: maven
       - name: PARA structure, note schema, broken wikilinks, ADR citations (BrainVaultTest)
         run: mvn -B -ntp -Dcheckstyle.skip=true -Djacoco.skip=true -Dtest=BrainVaultTest test
-
 
   local-check:
     name: local-check skill on a clean machine
