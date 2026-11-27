@@ -405,7 +405,10 @@ jobs:
           import glob
           import re
 
-          brain_files = glob.glob('brain/**/*.md', recursive=True)
+          brain_files = [
+                path for path in glob.glob('brain/**/*.md', recursive=True)
+                if not path.startswith('brain/skills/')
+            ]
 
           print(f'Found {len(brain_files)} notes in brain vault.')
 

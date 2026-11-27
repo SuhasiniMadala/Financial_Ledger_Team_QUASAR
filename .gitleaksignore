@@ -1,0 +1,3 @@
+# Intentional fake JWT test fixture in AuthApiTest (FR-AUTH-07). Not a credential.
+6ffe001f0185ab20d39c6cf47ec73625a11a0fe6:src/test/java/com/quasar/ledger/module/auth/AuthApiTest.java:jwt:125
+src/test/java/com/quasar/ledger/module/auth/AuthApiTest.java:jwt:125
