@@ -10,48 +10,48 @@ Owner: Suhasini M (issue #17). Every number below comes from a real run on 2026-
 | Java / Maven | Oracle JDK 21.0.6 (code compiled for Java 17) / Maven 3.9.11 |
 | Database | SQLite 3 via sqlite-jdbc 3.45.3.0, WAL, `synchronous=FULL`, a fresh file per test context |
 | Shell for skills | Windows PowerShell 5.1.26100 |
-| Code | local Stage 3 workspace on top of `main` @ `035a42e` (before the three Stage 3 PRs were opened) |
+| Code | branch `stage3/member-3-transfers-history` on top of `main` @ `3c5c491` (after PRs #23 and #24 were merged), re-run after the PR #25 review fixes |
 
 ## 2. Full automated suite - `mvn -B clean verify`
 
-Result: **BUILD SUCCESS - 151 tests, 0 failures, 0 errors, 0 skipped.** Checkstyle: 0 violations. JaCoCo: "All coverage checks have been met."
+Result: **BUILD SUCCESS - 153 tests, 0 failures, 0 errors, 0 skipped.** Checkstyle: 0 violations. JaCoCo: "All coverage checks have been met." (Re-run on 2026-11-27 after adding `TransferApiTest.deactivatedWalletsTakeNoPart` and `PaymentAndMerchantApiTest.statisticsCountReversedPaymentsAsCompleted`; the first run had 151 tests.)
 
 | Test class | Tests | Failed | Errors | Skipped | Time (s) |
 |---|---|---|---|---|---|
-| ArchitectureInvariantsTest (Stage 1 placeholder) | 8 | 0 | 0 | 0 | 0.08 |
-| SkeletonSanityTest (Stage 1 placeholder) | 1 | 0 | 0 | 0 | 0.01 |
-| architecture.ArchitectureRulesTest | 3 | 0 | 0 | 0 | 0.58 |
-| common.id.IdGeneratorTest | 3 | 0 | 0 | 0 | 0.34 |
-| common.util.MoneyFormatterTest | 11 | 0 | 0 | 0 | 0.28 |
-| config.DatabaseConfigurationTest | 4 | 0 | 0 | 0 | 8.81 |
+| ArchitectureInvariantsTest (Stage 1 placeholder) | 8 | 0 | 0 | 0 | 0.05 |
+| SkeletonSanityTest (Stage 1 placeholder) | 1 | 0 | 0 | 0 | 0.00 |
+| architecture.ArchitectureRulesTest | 3 | 0 | 0 | 0 | 0.47 |
+| common.id.IdGeneratorTest | 3 | 0 | 0 | 0 | 0.24 |
+| common.util.MoneyFormatterTest | 11 | 0 | 0 | 0 | 0.24 |
+| config.DatabaseConfigurationTest | 4 | 0 | 0 | 0 | 8.10 |
 | docs.OpenApiDocumentationTest | 1 | 0 | 0 | 0 | 1.05 |
-| module.admin.AdminDirectoryApiTest | 7 | 0 | 0 | 0 | 1.84 |
-| module.admin.AdminLedgerQueryApiTest | 3 | 0 | 0 | 0 | 1.41 |
-| module.admin.ReversalApiTest | 5 | 0 | 0 | 0 | 2.33 |
-| module.admin.RollbackFailureInjectionTest | 3 | 0 | 0 | 0 | 3.20 |
-| module.admin.TestFundingApiTest | 8 | 0 | 0 | 0 | 2.58 |
-| module.auth.AuthApiTest | 11 | 0 | 0 | 0 | 2.09 |
-| module.auth.service.JwtServiceTest | 4 | 0 | 0 | 0 | 0.02 |
-| module.health.HealthApiTest | 2 | 0 | 0 | 0 | 0.33 |
+| module.admin.AdminDirectoryApiTest | 7 | 0 | 0 | 0 | 1.76 |
+| module.admin.AdminLedgerQueryApiTest | 3 | 0 | 0 | 0 | 0.99 |
+| module.admin.ReversalApiTest | 5 | 0 | 0 | 0 | 1.99 |
+| module.admin.RollbackFailureInjectionTest | 3 | 0 | 0 | 0 | 2.93 |
+| module.admin.TestFundingApiTest | 8 | 0 | 0 | 0 | 2.28 |
+| module.auth.AuthApiTest | 11 | 0 | 0 | 0 | 1.63 |
+| module.auth.service.JwtServiceTest | 4 | 0 | 0 | 0 | 0.03 |
+| module.health.HealthApiTest | 2 | 0 | 0 | 0 | 0.34 |
 | module.idempotency.IdempotencyRulesTest | 10 | 0 | 0 | 0 | 0.04 |
-| module.ledger.LedgerImmutabilityTest | 3 | 0 | 0 | 0 | 0.88 |
-| module.ledger.LedgerServiceTest | 5 | 0 | 0 | 0 | 1.44 |
-| module.reconciliation.ReconciliationApiTest | 3 | 0 | 0 | 0 | 1.11 |
-| module.reconciliation.ReconciliationDetectsCorruptionTest | 2 | 0 | 0 | 0 | 1.72 |
-| module.transfer.BusyTimeoutTest | 1 | 0 | 0 | 0 | 2.03 |
-| module.transfer.ConcurrencyApiTest | 4 | 0 | 0 | 0 | 4.34 |
-| module.transfer.DurabilityTest | 1 | 0 | 0 | 0 | 12.87 |
-| module.transfer.PaymentAndMerchantApiTest | 6 | 0 | 0 | 0 | 3.50 |
-| module.transfer.TransactionHistoryApiTest | 4 | 0 | 0 | 0 | 2.28 |
-| module.transfer.TransferApiTest | 11 | 0 | 0 | 0 | 6.15 |
-| module.transfer.TransferRollbackTest | 1 | 0 | 0 | 0 | 1.57 |
-| module.transfer.service.MerchantAverageTest | 8 | 0 | 0 | 0 | 0.08 |
-| module.wallet.WalletApiTest | 6 | 0 | 0 | 0 | 1.64 |
-| repository.BrainVaultTest | 4 | 0 | 0 | 0 | 0.37 |
+| module.ledger.LedgerImmutabilityTest | 3 | 0 | 0 | 0 | 0.66 |
+| module.ledger.LedgerServiceTest | 5 | 0 | 0 | 0 | 1.27 |
+| module.reconciliation.ReconciliationApiTest | 3 | 0 | 0 | 0 | 1.03 |
+| module.reconciliation.ReconciliationDetectsCorruptionTest | 2 | 0 | 0 | 0 | 1.66 |
+| module.transfer.BusyTimeoutTest | 1 | 0 | 0 | 0 | 1.71 |
+| module.transfer.ConcurrencyApiTest | 4 | 0 | 0 | 0 | 3.56 |
+| module.transfer.DurabilityTest | 1 | 0 | 0 | 0 | 12.17 |
+| module.transfer.PaymentAndMerchantApiTest | 7 | 0 | 0 | 0 | 3.54 |
+| module.transfer.service.MerchantAverageTest | 8 | 0 | 0 | 0 | 0.02 |
+| module.transfer.TransactionHistoryApiTest | 4 | 0 | 0 | 0 | 2.31 |
+| module.transfer.TransferApiTest | 12 | 0 | 0 | 0 | 6.44 |
+| module.transfer.TransferRollbackTest | 1 | 0 | 0 | 0 | 1.24 |
+| module.wallet.WalletApiTest | 6 | 0 | 0 | 0 | 1.73 |
+| repository.BrainVaultTest | 4 | 0 | 0 | 0 | 0.34 |
 | repository.SkillDefinitionsTest | 3 | 0 | 0 | 0 | 0.02 |
-| security.ErrorHandlingAndInputSafetyTest | 4 | 0 | 0 | 0 | 0.56 |
-| security.SecurityAccessMatrixTest | 1 | 0 | 0 | 0 | 0.74 |
-| **Total** | **151** | **0** | **0** | **0** | |
+| security.ErrorHandlingAndInputSafetyTest | 4 | 0 | 0 | 0 | 0.55 |
+| security.SecurityAccessMatrixTest | 1 | 0 | 0 | 0 | 0.57 |
+| **Total** | **153** | **0** | **0** | **0** | |
 
 The two Stage 1 placeholder classes test logic written inside the test itself, not application code; they were kept unchanged (lint fix only) and are not counted as evidence for any requirement.
 
@@ -59,16 +59,18 @@ The two Stage 1 placeholder classes test logic written inside the test itself, n
 
 | Package | Lines covered | Coverage |
 |---|---|---|
-| module.ledger | 187 / 190 | 98.4% |
-| module.transfer | 175 / 175 | 100.0% |
-| module.idempotency | 67 / 71 | 94.4% |
-| module.reconciliation | 67 / 70 | 95.7% |
-| module.admin | 151 / 151 | 100.0% |
-| module.auth | 142 / 157 | 90.4% |
-| module.wallet | 129 / 137 | 94.2% |
-| config | 140 / 147 | 95.2% |
-| common.* | 166 / 172 | 96.5% |
-| **All production code** | **1234 / 1282** | **96.3%** |
+| module.ledger | 188 / 191 | 98.4% |
+| module.transfer | 174 / 174 | 100.0% |
+| module.idempotency | 69 / 73 | 94.5% |
+| module.reconciliation | 67 / 69 | 97.1% |
+| module.admin | 153 / 153 | 100.0% |
+| module.auth | 146 / 159 | 91.8% |
+| module.wallet | 133 / 141 | 94.3% |
+| module.health | 9 / 9 | 100.0% |
+| config | 141 / 147 | 95.9% |
+| common.* | 170 / 177 | 96.0% |
+| `FinancialLedgerApplication` (main method) | 1 / 3 | 33.3% |
+| **All production code** | **1251 / 1296** | **96.5%** |
 
 NFR-TEST-07 requires >= 70% for ledger, transfer, idempotency and reconciliation: **PASS** (enforced by the build).
 

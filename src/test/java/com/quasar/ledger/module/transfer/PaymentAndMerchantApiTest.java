@@ -63,7 +63,14 @@ class PaymentAndMerchantApiTest extends ApiTestBase {
         api.post("/api/v1/admin/wallets/" + cafe.walletId() + "/freeze", java.util.Map.of("reason", "merchant review"), admin);
         assertThat(TransferSteps.pay(api, asha.token(), ashaWallet, cafe.merchantCode(), 1_000, null, newKey()).code())
                 .isEqualTo("WALLET_NOT_ACTIVE");
+        // BR-07: DEACTIVATED is final and excluded from all transactions.
+        api.post("/api/v1/admin/wallets/" + cafe.walletId() + "/deactivate", java.util.Map.of("reason", "merchant closed down"), admin);
+        Response toDeactivated = TransferSteps.pay(api, asha.token(), ashaWallet, cafe.merchantCode(), 1_000, null, newKey());
+        assertThat(toDeactivated.status()).isEqualTo(422);
+        assertThat(toDeactivated.code()).isEqualTo("WALLET_NOT_ACTIVE");
         assertThat(storedBalance(cafe.walletId())).isZero();
+        assertThat(storedBalance(ashaWallet)).isEqualTo(500_000);
+        LedgerSteps.assertReconciles(api, admin);
     }
 
     @Test
@@ -130,5 +137,25 @@ class PaymentAndMerchantApiTest extends ApiTestBase {
         assertThat(r.number("averageMinor")).isEqualTo(100); // 100.33 -> 100
         assertThat(api.get("/api/v1/merchant/statistics?from=2000-01-01&to=2000-01-31", cafe.token()).number("paymentCount")).isZero();
         assertThat(api.get("/api/v1/merchant/statistics", asha.token()).status()).isEqualTo(403);
+    }
+
+    @Test
+    @DisplayName("FR-PAY-07 + BR: a reversed payment stays COMPLETED, so statistics still count it; the refund is a separate REVERSAL")
+    void statisticsCountReversedPaymentsAsCompleted() {
+        String refunded = TransferSteps.pay(api, asha.token(), ashaWallet, cafe.merchantCode(), 25_000, "Order 1187", newKey())
+                .text("transactionId");
+        assertThat(TransferSteps.pay(api, asha.token(), ashaWallet, cafe.merchantCode(), 10_000, "Order 1188", newKey()).status())
+                .isEqualTo(201);
+        assertThat(LedgerSteps.reverse(api, admin, refunded, "customer returned the item", newKey()).status()).isEqualTo(201);
+
+        // Decision (SRS FR-PAY-07 "completed payments"; "reversed" is a linked REVERSAL, not a status): both payments count.
+        Response r = api.get("/api/v1/merchant/statistics", cafe.token());
+        assertThat(r.number("paymentCount")).isEqualTo(2);
+        assertThat(r.number("totalMinor")).isEqualTo(35_000);
+        assertThat(r.number("averageMinor")).isEqualTo(17_500);
+        // The money itself is correct: the refund left the merchant wallet and went back to Asha.
+        assertThat(storedBalance(cafe.walletId())).isEqualTo(10_000);
+        assertThat(storedBalance(ashaWallet)).isEqualTo(490_000);
+        LedgerSteps.assertReconciles(api, admin);
     }
 }

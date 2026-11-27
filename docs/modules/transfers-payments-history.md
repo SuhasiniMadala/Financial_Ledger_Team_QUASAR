@@ -11,7 +11,7 @@ Issues: #13, #14, #15, #16, #17. Requirements: FR-TRF-01..14, FR-PAY-01..07, FR-
 | `PaymentService` | destination is the merchant's wallet found by merchant code |
 | `TransferRules` | shared rule order: INVALID_DESTINATION, SAME_WALLET, CURRENCY_MISMATCH, WALLET_NOT_ACTIVE, INSUFFICIENT_FUNDS - each recorded as a FAILED transaction and a stored 422 |
 | `TransactionHistoryService` / `TransactionHistoryController` | `GET /api/v1/transactions(/{id})`: COMPLETED transactions on own wallets (incoming and outgoing) + own FAILED attempts; detail shows only own entries |
-| `MerchantService` / `MerchantController` | `GET /api/v1/merchant/account`, `/transactions` (payer name + reference, never payer wallet or balance), `/statistics` (half-even average, default 30 days) |
+| `MerchantService` / `MerchantController` | `GET /api/v1/merchant/account`, `/transactions` (payer name + reference, never payer wallet or balance), `/statistics` (half-even average, default 30 days; a reversed payment stays COMPLETED and is still counted - the refund is the linked REVERSAL, see `PaymentAndMerchantApiTest.statisticsCountReversedPaymentsAsCompleted`) |
 
 ## Example: SRS 4.3.2 scenario 5
 
