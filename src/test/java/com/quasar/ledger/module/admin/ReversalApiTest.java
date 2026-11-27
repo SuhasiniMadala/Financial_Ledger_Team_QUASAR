@@ -52,27 +52,74 @@ class ReversalApiTest extends ApiTestBase {
         LedgerSteps.assertReconciles(api, admin);
     }
 
-    @Test
-    @DisplayName("SRS 4.6.2 #5: reversing again is 409 ALREADY_REVERSED; reversing a REVERSAL or a FAILED txn is 422 NOT_REVERSIBLE")
-    void cannotReverseTwiceOrReverseReversals() {
-        String admin = adminToken();
-        TestUser asha = registerUser("Asha Rao");
-        String wallet = createWallet(asha.token(), "INR");
-        String original = LedgerSteps.fundOk(api, admin, wallet, 100_000);
-        String reversal = LedgerSteps.reverse(api, admin, original, REASON, newKey()).text("transactionId");
+  
+@Test
+@DisplayName("SRS 4.6.2 #5: reversing again is 409 ALREADY_REVERSED; reversing a REVERSAL or a FAILED txn is 422 NOT_REVERSIBLE")
+void cannotReverseTwiceOrReverseReversals() {
+    String admin = adminToken();
+    TestUser asha = registerUser("Asha Rao");
+    String wallet = createWallet(asha.token(), "INR");
 
-        Response again = LedgerSteps.reverse(api, admin, original, REASON, newKey());
-        assertThat(again.status()).isEqualTo(409);
-        assertThat(again.code()).isEqualTo("ALREADY_REVERSED");
-        Response ofReversal = LedgerSteps.reverse(api, admin, reversal, REASON, newKey());
-        assertThat(ofReversal.status()).isEqualTo(422);
-        assertThat(ofReversal.code()).isEqualTo("NOT_REVERSIBLE");
+    String original = LedgerSteps.fundOk(api, admin, wallet, 100_000);
+    String reversal = LedgerSteps.reverse(api, admin, original, REASON, newKey())
+            .text("transactionId");
 
-        String failed = writeTransaction.execute(s -> ledger.recordFailed(new NewTransaction(TransactionType.TRANSFER, 5_000, "INR",
-                asha.accountId(), wallet, null, null, null), com.quasar.ledger.common.api.ErrorCode.INSUFFICIENT_FUNDS)).id();
-        assertThat(LedgerSteps.reverse(api, admin, failed, REASON, newKey()).code()).isEqualTo("NOT_REVERSIBLE");
-        assertThat(count("SELECT COUNT(*) FROM transaction_record WHERE reversal_of_id = ?", original)).isEqualTo(1);
-    }
+    // An already-reversed transaction cannot be reversed again.
+    Response again = LedgerSteps.reverse(api, admin, original, REASON, newKey());
+    assertThat(again.status()).isEqualTo(409);
+    assertThat(again.code()).isEqualTo("ALREADY_REVERSED");
+
+    // A reversal transaction cannot itself be reversed.
+    Response ofReversal = LedgerSteps.reverse(api, admin, reversal, REASON, newKey());
+    assertThat(ofReversal.status()).isEqualTo(422);
+    assertThat(ofReversal.code()).isEqualTo("NOT_REVERSIBLE");
+
+    // Create a FAILED transaction.
+    String failed = writeTransaction.execute(s -> ledger.recordFailed(
+            new NewTransaction(
+                    TransactionType.TRANSFER,
+                    5_000,
+                    "INR",
+                    asha.accountId(),
+                    wallet,
+                    null,
+                    null,
+                    null),
+            com.quasar.ledger.common.api.ErrorCode.INSUFFICIENT_FUNDS)).id();
+
+    // Record database counts before attempting the reversal.
+    int transactionsBefore = jdbc.queryForObject(
+            "SELECT COUNT(*) FROM transaction_record", Integer.class);
+    int entriesBefore = jdbc.queryForObject(
+            "SELECT COUNT(*) FROM ledger_entry", Integer.class);
+
+    // Attempt to reverse the FAILED transaction.
+    Response failedReversal = LedgerSteps.reverse(
+            api, admin, failed, REASON, newKey());
+
+    // Verify that the API rejects the request.
+    assertThat(failedReversal.status()).isEqualTo(422);
+    assertThat(failedReversal.code()).isEqualTo("NOT_REVERSIBLE");
+
+    // Verify that no reversal transaction was created.
+    assertThat(count(
+            "SELECT COUNT(*) FROM transaction_record WHERE reversal_of_id = ?",
+            failed)).isZero();
+
+    // Verify that no new transaction or ledger entries were created.
+    int transactionsAfter = jdbc.queryForObject(
+            "SELECT COUNT(*) FROM transaction_record", Integer.class);
+    int entriesAfter = jdbc.queryForObject(
+            "SELECT COUNT(*) FROM ledger_entry", Integer.class);
+
+    assertThat(transactionsAfter).isEqualTo(transactionsBefore);
+    assertThat(entriesAfter).isEqualTo(entriesBefore);
+
+    // The original transaction should still have exactly one reversal.
+    assertThat(count(
+            "SELECT COUNT(*) FROM transaction_record WHERE reversal_of_id = ?",
+            original)).isEqualTo(1);
+}
 
     @Test
     @DisplayName("FR-LED-08: reason must be 10-500 characters; key required; replay works")
