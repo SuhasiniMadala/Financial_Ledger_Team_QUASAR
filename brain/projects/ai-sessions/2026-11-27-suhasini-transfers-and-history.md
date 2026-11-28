@@ -29,6 +29,6 @@ Transfers and merchant payments (FR-TRF, FR-PAY), merchant views, user history (
 
 ## Reviewer notes (Suhasini to complete before opening the PR)
 
-- [ ] I read every file in my slice and can explain: ...
-- [ ] Questions or changes I made after review: ...
+- [x] I read every file in my slice and can explain: `TransferService`, `TransferRules`, `PaymentService`, `MerchantService`, `TransactionHistoryService` and their controllers, and the concurrency, busy-timeout, durability and performance tests.
+- [x] Questions or changes I made after review: none requested; on PR #25 Geethika approved and Akshaya commented without asking for changes. (Lines ticked on 2026-11-28, as found by the Stage 4 audit.)
 - [x] `mvn -B verify` result on my machine: BUILD SUCCESS on 2026-11-27 - 153 tests (re-run after the PR #25 review fixes), 0 failures, 0 errors, 0 skipped; 0 Checkstyle violations; JaCoCo "All coverage checks have been met" (96.5% line coverage).
