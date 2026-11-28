@@ -21,5 +21,6 @@ Every ADR documents:
 - [ADR-008: Supported Currencies (TBD-1) and Per-Transaction Limit (TBD-2)](ADR-008-supported-currencies-and-transaction-limit.md) - Stage 3, Akshaya A
 - [ADR-009: Explicit BEGIN IMMEDIATE in a Custom Transaction Manager (refines ADR-002)](ADR-009-explicit-begin-immediate-transaction-manager.md) - Stage 3, Geethika M
 - [ADR-010: A Fresh SQLite File per Test Context](ADR-010-test-database-isolation.md) - Stage 3, Suhasini M
+- [ADR-011: Minimal React Client - Vite Proxy, Integer Money and One Idempotent Submit Hook](ADR-011-react-client-architecture.md) - Stage 4, Akshaya A
 
 CI checks SB-3 for every ADR: `BrainVaultTest.everyAdrCitesADistilledNote` fails if an ADR cites no note from `brain/resources/`.

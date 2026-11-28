@@ -34,6 +34,7 @@ Entry point of the Obsidian vault. Organised by actionability (PARA, SDLC sectio
 7. [[monetary-representation-and-integer-units]] - integer paise (ADR-004, ADR-008)
 8. [[api-security-and-input-validation]] - JWT, RBAC, validation (ADR-006)
 9. [[testing-concurrency-and-failure-injection]] - how we test money code (ADR-010) - Stage 3
+10. [[react-client-money-and-idempotency]] - integer paise, idempotent submit and sessions in the React client (ADR-011) - Stage 4
 
 ## Research (reviewed raw notes, distilled above)
 

@@ -18,6 +18,7 @@ A double-entry digital wallet and ledger REST API (Java 17, Spring Boot 3, SQLit
 
 - Java 17 or newer (`java -version`)
 - Maven 3.8 or newer (`mvn -v`)
+- Node.js 20 or newer (`node -v`), for the React client only
 - Git
 - Windows PowerShell 5.1 (built into Windows) or PowerShell 7, for the skills
 
@@ -63,10 +64,22 @@ mvn -B -DskipTests package
 $env:LEDGER_JWT_SECRET = -join ((48..57 + 65..90 + 97..122) | Get-Random -Count 48 | ForEach-Object { [char]$_ })
 $env:LEDGER_ADMIN_EMAIL = 'admin@local.test'
 $env:LEDGER_ADMIN_PASSWORD = '<choose-a-local-password>'
-java -jar target/financial-ledger-0.3.0-SNAPSHOT.jar
+java -jar (Get-Item target/financial-ledger-*.jar).FullName
 ```
 
 Then open http://localhost:8080/swagger-ui.html or call `GET http://localhost:8080/api/v1/health` (expected `{"status":"UP","database":"UP"}`).
+
+## 5a. Run the React client (SRS 3.1)
+
+Needs Node.js 20 or newer (`node -v`). Keep the backend from section 5 running on port 8080, then in a **second** terminal:
+
+```powershell
+cd frontend
+npm ci            # first time only: installs the exact versions in package-lock.json
+npm run dev       # http://localhost:5173
+```
+
+Open http://localhost:5173, register a user or merchant, or log in with the admin from `LEDGER_ADMIN_EMAIL`. The dev server forwards every `/api` call to `http://localhost:8080` (set `LEDGER_API_URL` to use another backend). Checks: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Design: ADR-011.
 
 ## 6. API summary (SRS Table 3-1, all under `/api/v1`, star = needs `Idempotency-Key`)
 
@@ -96,6 +109,7 @@ src/main/java/com/quasar/ledger/
   module/   auth, wallet, ledger (sole writer), idempotency, transfer, reconciliation, admin, health
 src/main/resources/schema.sql   tables, constraints, immutability triggers
 src/test/java/...               unit, API, concurrency, durability, validator and performance tests
+frontend/                       React client (SRS 3.1): src/features/<area>/ screens, src/lib money + errors
 brain/                          second brain + Agent Skills
 docs/                           architecture, ADRs, API, testing, CI
 ```
