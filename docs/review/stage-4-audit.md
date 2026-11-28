@@ -15,7 +15,7 @@ Every row below was checked in the code, in Git or on GitHub on the audit date. 
 | Tags | `v0.3.0-stage3` only; convention `v<major>.<minor>.<patch>-stage<N>` (`docs/branching-strategy.md` line 34) | `git tag --list` |
 | GitHub Releases | none (the Stage 3 tag has no Release page) | `gh release list` |
 | Branch protection on `main` | not enabled at audit time; **enabled on 2026-11-28 after decision D5** | `gh api .../branches/main/protection` returned 404 "Branch not protected" before, and the rule set after |
-| Issues | #5-#22 all CLOSED; no open issues | `gh issue list --state all` |
+| Issues | At audit time: #5-#22 all CLOSED, no open issues of any kind. After the plan was approved, Stage 4 **work-tracking** issues #30-#34 were opened (one per PR: P0, A1, G1, S1, R1); they are planned tasks, not defects. **Open defects: none** (section 3). | `gh issue list --state all` |
 | Pull requests | #1-#4, #23-#29 all MERGED; none open | `gh pr list --state all` |
 | CI on `main` | last 10 runs `success` (latest run 46044841337, merge of PR #29) | `gh run list` |
 | Toolchain (Suhasini's laptop) | Java 21.0.6, Maven 3.9.11, Node v24.18.0, npm 11.16.0 | `java -version`, `mvn -v`, `node -v` |
@@ -55,7 +55,7 @@ Every row below was checked in the code, in Git or on GitHub on the audit date. 
 | DEF-004/005 local-check crash on PS 5.1, server left running | #21 | Closed | fix in `local-check.ps1`; must be **re-proven** by the live Stage 4 run | blocker if it regresses (live demo) |
 | DEF-006 simulate-transfer input column / exit code | #22 | Closed | must be **re-proven** by the Stage 4 `-Evaluate` run | blocker if it regresses (live demo) |
 
-No open defects. No issue was found "fixed but not closed" or "closed but not fixed".
+No open defects. No issue was found "fixed but not closed" or "closed but not fixed". The open Stage 4 issues #30-#34 track planned work (section 9), not defects; any defect found during Stage 4 gets its own `defect` issue and a row in `docs/testing/defect-log.md` (TQ-8).
 
 ## 4. Documentation mismatches found
 
