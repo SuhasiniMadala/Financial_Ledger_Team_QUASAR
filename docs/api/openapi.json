@@ -6,7 +6,7 @@
     "version" : "0.3.0"
   },
   "servers" : [ {
-    "url" : "http://localhost:53764",
+    "url" : "http://localhost:62852",
     "description" : "Generated server url"
   } ],
   "paths" : {
@@ -2567,6 +2567,9 @@
             "type" : "string"
           },
           "role" : {
+            "type" : "string"
+          },
+          "displayName" : {
             "type" : "string"
           }
         }

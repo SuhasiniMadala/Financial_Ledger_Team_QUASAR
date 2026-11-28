@@ -118,6 +118,23 @@ class AuthApiTest extends ApiTestBase {
     }
 
     @Test
+    @DisplayName("SRS 3.1: login returns the account name shown in the client's top bar, for every role")
+    void loginReturnsDisplayNameForEveryRole() {
+        TestUser asha = registerUser("Asha Rao");
+        Response user = api.post("/api/v1/auth/login", Map.of("email", asha.email(), "password", PASSWORD), null);
+        assertThat(user.text("displayName")).isEqualTo("Asha Rao");
+        assertThat(user.text("role")).isEqualTo("USER");
+
+        TestMerchant cafe = registerMerchant("Campus Cafe");
+        Response merchant = api.post("/api/v1/auth/login", Map.of("email", cafe.email(), "password", PASSWORD), null);
+        assertThat(merchant.text("displayName")).isEqualTo("Campus Cafe");
+        assertThat(merchant.text("role")).isEqualTo("MERCHANT");
+
+        Response admin = api.post("/api/v1/auth/login", Map.of("email", ADMIN_EMAIL, "password", ADMIN_PASSWORD), null);
+        assertThat(admin.text("displayName")).isEqualTo("Test Admin"); // ledger.admin.display-name in the test config
+    }
+
+    @Test
     @DisplayName("FR-AUTH-07: missing, malformed or forged tokens give 401")
     void badTokensAreRejected() {
         assertThat(api.get("/api/v1/wallets", null).status()).isEqualTo(401);
