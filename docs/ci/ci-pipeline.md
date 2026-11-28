@@ -13,6 +13,8 @@ Workflow: `.github/workflows/ci.yml`. Trigger: **every pull request** (any branc
 | SKILL.md validation | `Validate SKILL.md files` | `mvn ... -Dtest=SkillDefinitionsTest test` | frontmatter/naming invalid, unknown field, missing skill, no distilled-note citation |
 | Brain validation | `Validate brain notes` | `mvn ... -Dtest=BrainVaultTest test` | PARA folder/index/log missing, note schema invalid, broken wikilink, ADR without a distilled-note citation |
 | (extra) local-check | `local-check skill on a clean machine` | `pwsh ./brain/skills/local-check/scripts/local-check.ps1` | any of the five local-check steps fails |
+| Build, lint, tests (client, Stage 4) | `Frontend (lint, types, tests, build)` | `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` in `frontend/` | lint error (incl. `parseFloat` ban), type error, failing unit/component test, build error |
+| Client against the real backend (Stage 4) | `Frontend integration (real backend)` | build jar, start it on a fresh database with a job-only admin password, `npm run test:integration` | the client's API modules and the backend disagree, a balance is wrong, or reconciliation is not PASS |
 
 Each job has a timeout, uses the Maven cache, and prints the failing file and line. Test and coverage reports are kept as the `test-reports` artifact for 14 days; the local-check report is shown on the run's summary page.
 
