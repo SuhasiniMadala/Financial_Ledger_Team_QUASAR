@@ -95,7 +95,7 @@ public class AuthService {
         }
         UserAccount a = account.get();
         JwtService.IssuedToken token = jwt.issue(a.id(), a.role());
-        return new LoginResponse(token.token(), "Bearer", token.expiresInSeconds(), a.id(), a.role().name());
+        return new LoginResponse(token.token(), "Bearer", token.expiresInSeconds(), a.id(), a.role().name(), a.displayName());
     }
 
     private UserAccount createAccount(String rawEmail, String password, String displayName, Role role) {
