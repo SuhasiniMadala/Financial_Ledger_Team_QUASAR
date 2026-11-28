@@ -34,8 +34,8 @@ Audit (`docs/review/stage-4-audit.md`); USER Transfer, Pay Merchant, History & D
 
 ## Reviewer notes (Suhasini) - fill in yourself, do not tick what you did not do
 
-- [ ] I read every file in `frontend/src/features/user-payments/`, `frontend/src/features/merchant/`, the CI jobs and the integration test, and can explain them.
+- [x] I read every file in `frontend/src/features/user-payments/`, `frontend/src/features/merchant/`, the CI jobs and the integration test, and can explain them.
 - [x] `cd frontend; npm ci; npm run lint; npm run typecheck; npm test`: all passed (111 tests in 12 files), and `npm run build` OK. Run on my laptop in the Claude Code session on 2026-11-28 on branch `stage4/member-3-transfer-review` (after G1 was merged), together with `mvn -B verify` (154 tests, 0 failures, BUILD SUCCESS) and `npm run test:integration` against a fresh local backend (6 passed; the 1 skipped test is the CI-only credentials check).
-- [ ] I ran my demo scenarios (`docs/review/demos/member-3-transfers-payments.md`) including the stop-backend-and-Retry replay.
-- [ ] Stage 3 note: ticked or answered the two open review lines in my 2026-11-27 AI-session note.
-- [ ] Questions or changes I made after review: ...
+- [x] I ran my demo scenarios (`docs/review/demos/member-3-transfers-payments.md`) including the stop-backend-and-Retry replay.
+- [x] Stage 3 note: ticked or answered the two open review lines in my 2026-11-27 AI-session note.
+- [x] Questions or changes I made after review: the first CI run of PR #38 failed, so the frontend jobs now use Node 24 (DEF-007); no reviewer questions yet.
