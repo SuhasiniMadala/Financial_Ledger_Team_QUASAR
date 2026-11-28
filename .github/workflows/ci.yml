@@ -1,6 +1,7 @@
 # Financial Ledger CI (SDLC section 4): runs on EVERY pull request and on pushes to main.
 # Jobs: build, lint, tests (+ coverage rule), secret scanning, SKILL.md validation, brain validation,
-# and the local-check skill on a clean machine. Documentation: docs/ci/ci-pipeline.md
+# the local-check skill on a clean machine, and (Stage 4) the React client: lint, types, tests, build, and its
+# API modules against a real backend. Documentation: docs/ci/ci-pipeline.md
 name: Financial Ledger CI
 
 "on":
@@ -124,3 +125,69 @@ jobs:
       - name: Show the report on the run summary page
         if: always()
         run: cat target/local-check-report.md >> "$GITHUB_STEP_SUMMARY" || true
+
+  frontend:
+    name: Frontend (lint, types, tests, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: ESLint (includes the TQ-6 no-parseFloat rule)
+        run: npm run lint
+      - name: TypeScript type check
+        run: npm run typecheck
+      - name: Unit and component tests (UI-01..UI-05)
+        run: npm test
+      - name: Production build
+        run: npm run build
+
+  frontend-integration:
+    name: Frontend integration (real backend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build the backend jar
+        run: mvn -B -ntp -DskipTests -Dcheckstyle.skip=true package
+      - name: Start the backend on a fresh database (admin password generated for this job only, never stored)
+        run: |
+          echo "LEDGER_ADMIN_EMAIL=admin@ci.test" >> "$GITHUB_ENV"
+          PASSWORD="$(openssl rand -hex 24)"
+          echo "::add-mask::$PASSWORD"
+          echo "LEDGER_ADMIN_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+          LEDGER_ADMIN_EMAIL=admin@ci.test LEDGER_ADMIN_PASSWORD="$PASSWORD" \
+            nohup java -jar target/financial-ledger-*.jar --ledger.db.path="$RUNNER_TEMP/ci-ledger.db" \
+            --ledger.jwt.allow-ephemeral-secret=true > "$RUNNER_TEMP/server.log" 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:8080/api/v1/health && exit 0
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/server.log"
+          exit 1
+      - name: Client API modules against the real backend (ends with reconciliation PASS)
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run test:integration
+      - name: Server log on failure
+        if: failure()
+        run: cat "$RUNNER_TEMP/server.log" || true

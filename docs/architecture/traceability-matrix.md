@@ -75,7 +75,12 @@ Requirement -> GitHub Issue -> Pull Request -> Test -> Skill -> Brain note. Upda
 | DB-05 retention | #9 | M2 PR | immutability triggers; idempotency records kept >= 24 h (never deleted) | - | [[immutable-ledger-and-audit-trails]] |
 | ACC-01..04 system accounts, derived balances, posting rules | #9 | M2 PR | `AdminDirectoryApiTest.listsAccountsIncludingSystemFunding`, `TestFundingApiTest.goldenRule`, `ReversalApiTest`, reconciliation C3 | simulate-transfer step 5 | [[double-entry-accounting-principles]] |
 | BR-01..10 | #9, #13 | M2 PR, M3 PR | amount, currency, destination, status (`TransferApiTest.otherBusinessRules`, `deactivatedWalletsTakeNoPart`, `PaymentAndMerchantApiTest.paymentRejections`), reversal tests above | simulate-transfer E02-E13 | [[double-entry-accounting-principles]] |
-| UI-01..UI-05 React client | - | Stage 4 | not in Stage 3 scope (development plan) | - | - |
+| UI-01 rupee formatting, Indian grouping | Stage 4 A1 | A1, S1 | `frontend/src/lib/money.test.ts` (backend `MoneyFormatterTest` cases), screen tests | - | [[react-client-money-and-idempotency]], ADR-011 |
+| UI-02 exact paise parsing, max two decimals | Stage 4 A1 | A1 | `money.test.ts` (incl. TQ-6 guard: no `parseFloat`/`toFixed`/`/ 100`), `TransferPage`/`TestFundingPage` tests | - | [[monetary-representation-and-integer-units]], ADR-004, ADR-011 |
+| UI-03 role screens, every error code readable | Stage 4 A1 | A1, G1, S1 | `App.test.tsx`, per-feature navigation tests, `errorMessages.test.ts` (checks all codes of `ErrorCode.java`) | - | [[api-error-contract-and-access-control]], ADR-011 |
+| UI-04 new key per submission, same key on retry | Stage 4 A1 | A1, G1, S1 | `useFinancialSubmit.test.ts`, retry tests in `UserPayments.test.tsx` and `AdminLedger.test.tsx`, `client-contract.int.test.ts` (real backend) | simulate-transfer step 3 | [[api-idempotency-and-retry-semantics]], ADR-005, ADR-011 |
+| UI-05 submit disabled while in flight | Stage 4 A1 | A1, S1 | `useFinancialSubmit.test.ts` (double click), `UserPayments.test.tsx` | - | [[react-client-money-and-idempotency]] |
+| SRS 3.1 account name in top bar (decision D3) | Stage 4 A1 | A1 | `AuthApiTest.loginReturnsDisplayNameForEveryRole`, `App.test.tsx` | - | ADR-011 |
 
 ## Skill requirements
 

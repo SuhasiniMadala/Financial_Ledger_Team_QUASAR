@@ -36,7 +36,7 @@ Before implementing any feature or modifying any code or tests, agents and devel
 3. Write meaningful commit messages and reference the issue (`Refs #12`, `Closes #12`).
 4. Every change (code, skills, brain) goes through a pull request with at least one approving review by another member (SB-5).
 5. Never commit passwords, tokens, API keys, or sensitive credentials. The JWT secret and admin password are environment variables only.
-6. CI must be green on every pull request: build, lint, tests + coverage, secret scanning, SKILL.md validation, brain validation, local-check (`docs/ci/ci-pipeline.md`); the frontend CI jobs arrive with Suhasini's PR.
+6. CI must be green on every pull request: build, lint, tests + coverage, secret scanning, SKILL.md validation, brain validation, local-check, and the frontend jobs (`docs/ci/ci-pipeline.md`).
 7. The React client (`frontend/`, ADR-011) keeps money as integer paise, uses `useFinancialSubmit` for every money form, and never computes a balance itself.
 
 ## Commands agents and developers use
@@ -49,6 +49,7 @@ Before implementing any feature or modifying any code or tests, agents and devel
 | local-check skill | `powershell -ExecutionPolicy Bypass -File brain/skills/local-check/scripts/local-check.ps1` |
 | simulate-transfer skill | see `brain/skills/simulate-transfer/SKILL.md` |
 | React client: install, check, run | `cd frontend; npm ci; npm run lint; npm run typecheck; npm test; npm run dev` (backend on :8080) |
+| Client against a real backend | `cd frontend; npm run test:integration` (see `frontend/tests/integration/README.md`) |
 
 ## Testing rules
 

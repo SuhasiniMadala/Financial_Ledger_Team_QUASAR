@@ -28,5 +28,5 @@ Rules and reasoning: [[react-client-money-and-idempotency]], [[api-idempotency-a
 ## Consequences
 - Positive: no backend change except one additive response field; all money rules are enforced twice (client pre-check, backend authority).
 - Positive: the client's API modules are plain functions, so the same code runs in component tests (fake client) and in integration tests against the real backend.
-- Negative: the client needs Node 20+ and a second process (`npm run dev` or `npm run preview`) next to the backend.
+- Negative: the client needs Node 24.15+ (or 22.22+, required by Vitest 5 and jsdom) and a second process (`npm run dev` or `npm run preview`) next to the backend.
 - Negative: the session token lives in `sessionStorage` and is readable by script in the page; accepted for this academic, single-origin client with no third-party scripts and 60-minute tokens.

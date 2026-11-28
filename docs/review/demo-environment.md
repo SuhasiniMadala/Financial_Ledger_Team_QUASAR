@@ -10,7 +10,7 @@ All money is simulated. Use only the synthetic people below (`@example.test` add
 |---|---|---|
 | Java 17+ | `java -version` | backend |
 | Maven 3.8+ | `mvn -v` | backend build |
-| Node.js 20+ | `node -v` | React client |
+| Node.js 24.15+ (or 22.22+) | `node -v` | React client |
 | Git | `git --version` | getting `main` |
 
 ## 2. Get the final code
