@@ -18,7 +18,7 @@ A double-entry digital wallet and ledger REST API (Java 17, Spring Boot 3, SQLit
 
 - Java 17 or newer (`java -version`)
 - Maven 3.8 or newer (`mvn -v`)
-- Node.js 20 or newer (`node -v`), for the React client only
+- Node.js 24.15 or newer (22.22+ also works; `node -v`), for the React client only
 - Git
 - Windows PowerShell 5.1 (built into Windows) or PowerShell 7, for the skills
 
@@ -71,7 +71,7 @@ Then open http://localhost:8080/swagger-ui.html or call `GET http://localhost:80
 
 ## 5a. Run the React client (SRS 3.1)
 
-Needs Node.js 20 or newer (`node -v`). Keep the backend from section 5 running on port 8080, then in a **second** terminal:
+Needs Node.js 24.15 or newer (22.22+ also works; `node -v`). Keep the backend from section 5 running on port 8080, then in a **second** terminal:
 
 ```powershell
 cd frontend

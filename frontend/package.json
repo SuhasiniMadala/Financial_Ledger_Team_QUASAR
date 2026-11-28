@@ -5,7 +5,7 @@
   "description": "Minimal React client for the Financial Ledger API (SRS 3.1, UI-01..UI-05). All money is simulated.",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": "^22.22.2 || >=24.15.0"
   },
   "scripts": {
     "dev": "vite",

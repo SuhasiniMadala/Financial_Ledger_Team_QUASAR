@@ -30,6 +30,7 @@ Audit (`docs/review/stage-4-audit.md`); USER Transfer, Pay Merchant, History & D
 - A `vite preview` process started through `npx` survived stopping its task and kept port 4173; found by checking the port and stopped by PID (same class of problem as DEF-005).
 - The skill's instructions hard-coded `financial-ledger-0.3.0-SNAPSHOT.jar`, which would break when the release changes the version; replaced with a wildcard.
 - Integration tests are skipped locally without admin credentials; in CI a missing credential now fails the job instead of silently skipping.
+- The first CI run of PR #38 failed in `Frontend (lint, types, tests, build)`: the job used Node 20, but Vitest 5 and jsdom 31 need Node 22.22+/24.15+, so no test worker could start (my laptop has Node 24, so it passed locally). Fixed by moving CI to Node 24 and correcting `engines` and the docs (DEF-007).
 
 ## Reviewer notes (Suhasini) - fill in yourself, do not tick what you did not do
 
