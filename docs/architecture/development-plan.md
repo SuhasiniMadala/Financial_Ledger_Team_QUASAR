@@ -62,7 +62,7 @@ Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A 
 
 ### Stage 4: Frontend, Verification & Review (Final Stage)
 
-Audit, team decisions D1-D6 and work split: `docs/review/stage-4-audit.md` (approved 2026-11-28). All Stage 4 review evidence lives in `docs/review/`. The earlier `docs/stage-4/` plan was superseded and removed (decision D2).
+Current Stage 4 plan (project note): `brain/projects/stage-4-client-and-review.md`. Audit, team decisions D1-D6 and work split: `docs/review/stage-4-audit.md` (approved 2026-11-28). All Stage 4 review evidence lives in `docs/review/`. The earlier `docs/stage-4/` plan was superseded and removed (decision D2).
 
 Work is split by area (one PR per member) and merged P0 -> A1 -> G1 -> S1 -> R1. A box is ticked only when the PR is merged to `main` with a review and green CI.
 
