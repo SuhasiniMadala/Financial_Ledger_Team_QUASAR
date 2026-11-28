@@ -8,7 +8,7 @@ Following the course SDLC and SRS v1.2 (the version in the repository; earlier d
 graph LR
     S1["Stage 1: Requirements & Setup<br/>(COMPLETED)"] --> S2["Stage 2: Architecture & Design<br/>(COMPLETED)"]
     S2 --> S3["Stage 3: Implementation, Testing & CI<br/>(COMPLETED)"]
-    S3 --> S4["Stage 4: Verification & Final Demonstration<br/>(NEXT)"]
+    S3 --> S4["Stage 4: Client, Verification & Final Demonstration<br/>(IN PROGRESS)"]
 ```
 
 ## 2. Stage Breakdown and Detailed Task Planning
@@ -61,14 +61,19 @@ Work is split by functional area (one member each) and merged M1 -> M2 -> M3. A 
 ---
 
 ### Stage 4: Frontend, Verification & Review (Final Stage)
-- [ ] **Task 4.1: Minimal React Web Interface**:
-  - User Dashboard, Transfer screen, Merchant Payment screen.
-  - Merchant transaction views and statistics.
-  - Admin wallet management, test funding, and reconciliation interface.
-- [ ] **Task 4.2: End-to-End Live Demonstrations**:
-  - Live execution of `simulate-transfer`, `local-check`, and `brain-query`.
-  - Walkthrough from requirement to brain note, ADR, code, and passing test.
-  - Final release tagging and documentation review.
+
+Current Stage 4 plan (project note): `brain/projects/stage-4-client-and-review.md`. Audit, team decisions D1-D6 and work split: `docs/review/stage-4-audit.md` (approved 2026-11-28). All Stage 4 review evidence lives in `docs/review/`. The earlier `docs/stage-4/` plan was superseded and removed (decision D2).
+
+Work is split by area (one PR per member) and merged P0 -> A1 -> G1 -> S1 -> R1. A box is ticked only when the PR is merged to `main` with a review and green CI.
+
+| Task | Owner | Issue | Branch | Merged |
+|---|---|---|---|---|
+| P0 Stage 4 audit, decisions D1-D6, removal of the superseded plan | Suhasini | #30 | `stage4/member-3-plan` | [ ] |
+| A1 React client foundation (UI-01..UI-05), Login/Register, USER Dashboard, ADMIN Users & Merchants and Wallets status; `displayName` in login (D3); ADR-011; local-check demonstration | Akshaya | #31 | `stage4/member-1-auth-wallet-review` | [ ] |
+| G1 ADMIN test funding, Transactions & Ledger, reversal, Reconciliation, Statistics; demo environment; brain-query demonstration; traceability walkthrough | Geethika | #32 | `stage4/member-2-ledger-review` | [ ] |
+| S1 USER Transfer, Pay Merchant, History; MERCHANT screens; frontend CI jobs and real-backend integration test; simulate-transfer Stage 4 evaluation; user guide; demo script | Suhasini | #33 | `stage4/member-3-transfer-review` | [ ] |
+| R1 Fresh checks on final `main`, full rehearsal, Stage 4 review note (SB-2), CHANGELOG, version 1.0.0, tag `v1.0.0-stage4` after team approval (D4) | Suhasini, with all three for rehearsal and evidence | #34 | `stage4/member-3-release` | [ ] |
+| Live review: FRs in the client, `simulate-transfer` end-to-end, `local-check` live, `brain-query` live, traceability walkthrough | all three, each presenting their own part (`docs/review/stage-4-demo-script.md`) | - | - | - |
 
 ## 3. Team Responsibilities Matrix
 
