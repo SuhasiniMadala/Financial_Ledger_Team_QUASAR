@@ -29,7 +29,7 @@ Show, with real API calls, that money is never created, lost or duplicated: retr
    ```powershell
    $env:LEDGER_ADMIN_EMAIL = 'admin@local.test'
    $env:LEDGER_ADMIN_PASSWORD = '<choose-a-local-password>'
-   java -jar target/financial-ledger-0.3.0-SNAPSHOT.jar --ledger.db.path=target/simulate.db --ledger.jwt.allow-ephemeral-secret=true
+   java -jar (Get-Item target/financial-ledger-*.jar).FullName --ledger.db.path=target/simulate.db --ledger.jwt.allow-ephemeral-secret=true
    ```
 
 3. In terminal 2 set the same two environment variables, then run:
@@ -53,7 +53,7 @@ Exit code 0 = PASS, 1 = FAIL, 2 = refused (unsafe target or missing credentials)
 
 ## Evaluation cases (-Evaluate, TQ-7)
 
-E01 valid transfer, E02 insufficient balance, E03 fractional amount, E04 zero, E05 negative, E06 nonexistent source, E07 nonexistent destination, E08 same wallet, E09 duplicate request, E10 same key with a different payload, E11 boundary values (1 paisa and limit + 1), E12 missing key, E13 frozen destination, E14 balances and reconciliation after all cases. Database failure mid-transfer (atomicity) cannot be injected into a running server safely; it is covered by the automated `TransferRollbackTest` and reported as NOT RUN here. Results are recorded in `docs/testing/skill-evaluations.md`.
+E01 valid transfer, E02 insufficient balance, E03 fractional amount, E04 zero, E05 negative, E06 nonexistent source, E07 nonexistent destination, E08 same wallet, E09 duplicate request, E10 same key with a different payload, E11 boundary values (1 paisa and limit + 1), E12 missing key, E13 frozen destination, E14 balances and reconciliation after all cases. Database failure mid-transfer (atomicity) cannot be injected into a running server safely; it is covered by the automated `TransferRollbackTest` and reported as NOT RUN here. Results are recorded in `docs/testing/skill-evaluations.md` (Stage 3) and `docs/testing/stage-4-skill-evaluation.md` (Stage 4).
 
 ## Failure handling
 
